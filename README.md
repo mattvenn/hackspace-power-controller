@@ -3,17 +3,53 @@
 
 # Hackspace RFID power switch & usage logger
 
+A system for logging usage and only allowing an inducted user to turn on power
+to a machine.
 
-## Hardware plan
+## Electrical components & wiring
 
-![hardware](hardware.svg)
-
-## Hardware layout
-
+![electrical components and wiring](electrical.png)
 
 ## Software plan
 
-![software](software.svg)
+![software](software.png)
+
+### LEDs
+
+* Red LED under the inlet IEC comes on with Yun at boot.
+* Green under outlet IEC comes on with SSR.
+
+### LCD messages
+
+status: wifi good, SSR on. user Matt logged in, using machine for 1:10
+
+    --------------------
+    s: WP       t: 01:10
+    u: matt
+
+status: wifi is bad, power is off. No-one logged in. 
+
+    --------------------
+    s: wp       t: 00:00
+    goto: ven.nz/1RFvu9s
+
+Unrecognised user.
+
+    --------------------
+    s: wp       t: 00:00
+    u: unrecognised
+
+* t = time the SSR has been on
+* u = username of user who turned on SSR
+* s = status (see below)
+
+#### Status
+
+Capital letter means true, lower; false
+
+* W wifi
+* P power is supplied to IEC outlet
+
 
 ## Parts list
 
@@ -26,8 +62,11 @@
 * fused power inlet
 * power outlet
 * green & red LEDs
+* beeper
 
 ## Case
+
+![case](case.png)
 
 All measurements in mm and stated as L x W x D
 
@@ -39,16 +78,21 @@ All measurements in mm and stated as L x W x D
 * IEC inlet/outlet/fuse = 32.5 x 79.2 (hole size for 1.5mm panel thickness) x 32.3 depth
 * LCD = 37 x 116 x ?
 
-Modelling the layout led to the following dimensions for the case:
-
-    280 x 120 x 90
-
+Modelling the layout led to a case size of 280 x 120 x 90mm.
 But these dimensions didn't yield many cases! So I looked for some common sizes
 and found some that were 240 x 120 x 100mm. Setting the openscad case dimensions
 to these figures allowed me to move things about to check fit.
 
-One decision I made was to keep the PSU and the RFID reader on opposite sides of
-the case, hopefully reducing interferance from the switched mode PSU.
+### Design decisions
 
-![case](case.png)
+Keep the PSU and the RFID reader on opposite sides of the case, hopefully reducing interferance from the switched mode PSU.
 
+Put all external components on the lid to simplify cutting the holes.
+
+Put the LEDs under the relevant IEC sockets to make it obvious when there is
+power supplied and provided.
+
+
+## Shortcomings
+
+* Super easy to bypass, but as used in a trusting environment, not seen as a big issue
