@@ -49,7 +49,7 @@ Capital letter means true, lower; false
 
 ## Parts list
 
-* [Arduino Yun](http://uk.rs-online.com/web/p/processor-microcontroller-development-kits/7824594/)
+* [Arduino Yun](http://uk.rs-online.com/web/p/products/7824594/)
 * [10W 5V PSU](http://uk.rs-online.com/web/p/products/0327936/)
 * [RFID reader](http://uk.rs-online.com/web/p/products/6666625/)
 * [12A SSR](http://uk.rs-online.com/web/p/products/1718904/) and [heatsink](http://uk.rs-online.com/web/p/products/1719070/)
