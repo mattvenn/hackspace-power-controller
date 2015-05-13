@@ -47,21 +47,22 @@ Capital letter means true, lower; false
 * W wifi
 * P power is supplied to IEC outlet
 
-
 ## Parts list
 
-* Arduino Yun
-* case
-* PSU
-* RFID reader
-* SSR
-* LCD 2x20
-* fused power inlet
-* power outlet
-* green & red LEDs
-* beeper
+* [Arduino Yun](http://uk.rs-online.com/web/p/processor-microcontroller-development-kits/7824594/)
+* [10W 5V PSU](http://uk.rs-online.com/web/p/products/0327936/)
+* [RFID reader](http://uk.rs-online.com/web/p/products/6666625/)
+* [12A SSR](http://uk.rs-online.com/web/p/products/1718904/) and [heatsink](http://uk.rs-online.com/web/p/products/1719070/)
+* [LCD 2x20](http://uk.rs-online.com/web/p/products/7200222/)
+* [fused power inlet/outlet](http://uk.rs-online.com/web/p/products/6112092/)
+* [green](http://uk.rs-online.com/web/p/products/0206514/) & [red](http://uk.rs-online.com/web/p/products/0206508/) LEDs
+* [beeper](http://uk.rs-online.com/web/p/products/5117636/)
+* [temperature sensor TMP36](http://uk.rs-online.com/web/p/products/0427351/)
+* [case](http://uk.rs-online.com/web/p/products/3648223/)
 
 ## Case
+
+[generated with openscad file case.scad](case.scad)
 
 ![case](case.png)
 
