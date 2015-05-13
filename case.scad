@@ -33,28 +33,30 @@ lcd_l = 37;
 lcd_w = 116;
 lcd_h = 10;
 
-case_l = 240;
-case_w = 120;
-case_h = 100;
+case_a1 = 233;
+case_a2 = 214;
+case_b1 = 113;
+case_b2 = 76;
+case_c1 = 25;
+case_c2 = 96;
 
 screw_r = 1.5;
 
 // stuff on the base
-translate([0,0,0]) rotate([0,0,90]) ssr();
 translate([-60,0,0]) rotate([0,0,90]) psu();
-translate([-110,0,30])
-    rotate([0,0,0]) iec();
-translate([70,0,0]) rotate([0,0,90]) yun();
+translate([15,0,0]) rotate([0,0,90]) ssr();
+translate([75,0,0]) rotate([0,0,90]) yun();
 
 // stuff on the lid
-translate([-40,0,90])
+translate([-40,0,97])
 {
-    translate([110,0,0]) rfid();
-    translate([0,20,0])
+    translate([110,0,-5]) rfid();
+    translate([0,-30,0])
         {
-        translate([-25,-40,0]) led();
-        translate([25,-40,0]) led();
+        translate([-20,65,0]) rotate([0,0,90]) iec();
         translate([0,0,0]) rotate([0,0,90]) lcd();
+        translate([-45,35,0]) led();
+        translate([0,35,0]) led();
         }
 }
 
@@ -119,7 +121,7 @@ module rfid()
 
 module iec()
 {
-    translate([0,0,iec_h/2])
+    translate([0,0,-iec_h/2])
     cube([iec_l, iec_w, iec_h], center=true);
 }
 
@@ -132,6 +134,16 @@ module led()
 module case()
 {
     color("red", 0.2)
-        translate([0,0,case_h/2-10])
-        cube([case_l, case_w, case_h], center=true);
+        translate([0,0,(case_c2-case_c1)/2])
+        {
+            cube([case_a1, case_b2, case_c2-case_c1], center=true);
+            cube([case_a2, case_b1, case_c2-case_c1], center=true);
+        }
+    color("blue", 0.2)
+        translate([0,0,case_c2/2-15 + case_c1 *2 ])
+        {
+            cube([case_a1, case_b2, case_c1], center=true);
+            cube([case_a2, case_b1, case_c1], center=true);
+        }
 }
+
