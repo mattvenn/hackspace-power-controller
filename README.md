@@ -1,6 +1,3 @@
-# Arduino Yun
-
-
 # Hackspace RFID power switch & usage logger
 
 A system for logging usage and only allowing an inducted user to turn on power
