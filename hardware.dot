@@ -1,0 +1,36 @@
+strict digraph G {
+    yun[shape=hexagon];
+    psu[shape=box];
+    ssr[shape=box];
+    mains_in[shape=box];
+    mains_out[shape=box];
+    mains_fuse[shape=box];
+    rfid[shape=diamond];
+    lcd[shape=diamond];
+    led_on;
+    led_off;
+
+    mains_in -> mains_fuse[label="240v"]
+    mains_fuse -> psu
+    mains_fuse -> ssr
+
+    mains_out[label="mains out"]
+    mains_in[label="mains in"]
+    mains_fuse[label="10A fuse"]
+    ssr[label="opto-isolated\n12A SSR\n+ heatsink"]
+
+    psu -> yun[label="5V @ 2A"]
+    ssr -> mains_out
+
+    psu[label="SMPS"]
+
+    yun -> lcd[label="parallel"];
+    rfid -> yun[dir="both"]
+    yun -> led_on;
+    yun -> led_off;
+    yun -> ssr;
+
+    led_on[label="green LED"]
+    led_off[label="red LED"]
+
+}
