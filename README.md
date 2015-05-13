@@ -7,6 +7,10 @@
 ## Hardware plan
 
 ![hardware](hardware.svg)
+
+## Hardware layout
+
+
 ## Software plan
 
 ![software](software.svg)
@@ -34,3 +38,6 @@ All measurements in mm and stated as L x W x D
 * RFID = 62 x 82 x ?
 * IEC inlet/outlet/fuse = 32.5 x 79.2 (hole size for 1.5mm panel thickness) x 32.3 depth
 * LCD = 37 x 116 x ?
+
+![case](case.png)
+
