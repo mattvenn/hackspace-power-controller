@@ -3,20 +3,37 @@
 A system for logging usage and only allowing an inducted user to turn on power
 to a machine.
 
-## Electrical components & wiring
+Valid inducted users are fetched from a google spreadsheet once per day.
 
-![electrical components and wiring](electrical.png)
+Inducted users use their RFID cards to turn on power to the connected machine.
 
-## Software plan
+Usage time is logged to a google spreadsheet for maintenance and billing
+purposes.
+
+# Software
+
+## Design decisions
+
+* Presenting an inducted user's RFID card will turn on or off the SSR.
+* If a new user is detected while machine is on, finish previous user's session and start a new one.
+* Never switch off/time out the connected machine in case it's a long job.
+* Pull validated users once per day and store locally in case internet is unavailable.
+* If internet is unavailable discard usage logging, add a queue later.
+
+## Flowchart
 
 ![software](software.png)
 
-### LEDs
+## Beeper
+
+Beep whenever a session starts or ends.
+
+## LEDs
 
 * Red LED under the inlet IEC comes on with Yun at boot.
 * Green under outlet IEC comes on with SSR.
 
-### LCD messages
+## LCD messages
 
 status: wifi good, SSR on. user Matt logged in, using machine for 1:10
 
@@ -24,7 +41,8 @@ status: wifi good, SSR on. user Matt logged in, using machine for 1:10
     s: WP       t: 01:10
     u: matt
 
-status: wifi is bad, power is off. No-one logged in. 
+status: wifi is bad, power is off. No-one logged in. Link to project page is
+displayed.
 
     --------------------
     s: wp       t: 00:00
@@ -40,12 +58,25 @@ Unrecognised user.
 * u = username of user who turned on SSR
 * s = status (see below)
 
-#### Status
+### Status
 
 Capital letter means true, lower; false
 
 * W wifi
 * P power is supplied to IEC outlet
+
+# Electrical
+
+* Arduino Yun doing control and cloud logging
+* 20x2 LCD for messages
+* Red and Green LEDs for status
+* Beeper for audible RFID read
+* Panel mounted fused IEC inlet/outlet
+* 12A SSR with 10A fuse. Temperature sensing on heatsink
+
+## Wiring
+
+![electrical components and wiring](electrical.png)
 
 ## Parts list
 
@@ -90,7 +121,6 @@ Put all external components on the lid to simplify cutting the holes.
 Put the LEDs under the relevant IEC sockets to make it obvious when there is
 power supplied and provided.
 
-
-## Shortcomings
+# Shortcomings
 
 * Super easy to bypass, but as used in a trusting environment, not seen as a big issue
