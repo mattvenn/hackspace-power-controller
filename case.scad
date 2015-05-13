@@ -33,26 +33,29 @@ lcd_l = 37;
 lcd_w = 116;
 lcd_h = 10;
 
-case_l = 280;
+case_l = 240;
 case_w = 120;
-case_h = 90;
+case_h = 100;
 
 screw_r = 1.5;
 
 // stuff on the base
-translate([-100,0,0]) rotate([0,0,90]) ssr();
-translate([0,-20,0]) psu();
-translate([0,45,30])
-    rotate([0,0,90]) iec();
-translate([100,00,0]) rotate([0,0,90]) yun();
+translate([0,0,0]) rotate([0,0,90]) ssr();
+translate([-60,0,0]) rotate([0,0,90]) psu();
+translate([-110,0,30])
+    rotate([0,0,0]) iec();
+translate([70,0,0]) rotate([0,0,90]) yun();
 
 // stuff on the lid
-translate([0,0,80])
+translate([-40,0,90])
 {
-translate([-25,-30,0]) led();
-translate([25,-30,0]) led();
-translate([100,0,0]) rfid();
-translate([0,0,0]) rotate([0,0,90]) lcd();
+    translate([110,0,0]) rfid();
+    translate([0,20,0])
+        {
+        translate([-25,-40,0]) led();
+        translate([25,-40,0]) led();
+        translate([0,0,0]) rotate([0,0,90]) lcd();
+        }
 }
 
 case();
