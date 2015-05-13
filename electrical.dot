@@ -2,9 +2,11 @@ strict digraph G {
     yun[shape=hexagon];
     psu[shape=box];
     ssr[shape=box];
+    beep[shape=box];
     mains_in[shape=box];
     mains_out[shape=box];
     mains_fuse[shape=box];
+    temp[shape=diamond];
     rfid[shape=diamond];
     lcd[shape=diamond];
     led_on;
@@ -26,6 +28,8 @@ strict digraph G {
 
     yun -> lcd[label="parallel"];
     rfid -> yun[dir="both"]
+    temp -> yun;
+    yun -> beep;
     yun -> led_on;
     yun -> led_off;
     yun -> ssr;

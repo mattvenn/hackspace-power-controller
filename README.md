@@ -18,7 +18,7 @@ purposes.
 * If a new user is detected while machine is on, finish previous user's session and start a new one.
 * Never switch off/time out the connected machine in case it's a long job.
 * Pull validated users once per day and store locally in case internet is unavailable.
-* If internet is unavailable discard usage logging, add a queue later.
+* If internet is unavailable discard usage logging. Possible to add a queue later.
 
 ## Flowchart
 
@@ -30,7 +30,7 @@ Beep whenever a session starts or ends.
 
 ## LEDs
 
-* Red LED under the inlet IEC comes on with Yun at boot.
+* Red under the inlet IEC comes on with Yun at boot.
 * Green under outlet IEC comes on with SSR.
 
 ## LCD messages
@@ -78,7 +78,7 @@ Capital letter means true, lower; false
 
 ![electrical components and wiring](electrical.png)
 
-## Parts list
+## Bill of Materials
 
 * [Arduino Yun](http://uk.rs-online.com/web/p/products/7824594/)
 * [10W 5V PSU](http://uk.rs-online.com/web/p/products/0327936/)
@@ -91,7 +91,7 @@ Capital letter means true, lower; false
 * [temperature sensor TMP36](http://uk.rs-online.com/web/p/products/0427351/)
 * [case](http://uk.rs-online.com/web/p/products/3648223/)
 
-## Case
+## Layout
 
 [generated with openscad file case.scad](case.scad)
 
