@@ -8,10 +8,6 @@ yun_h = 10;
 switch_d = 8;
 switch_h = 20; //including tabs
 
-// LED = 12mm diameter
-led_d = 12;
-led_h = 15;
-
 // RFID = 62 x 82 x ?
 rfid_l = 62;
 rfid_w = 82;
