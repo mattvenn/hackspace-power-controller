@@ -1,40 +1,27 @@
 strict digraph G {
     yun[shape=hexagon];
-    psu[shape=box];
-    ssr[shape=box];
     beep[shape=box];
-    mains_in[shape=box];
-    mains_out[shape=box];
-    mains_fuse[shape=box];
-    temp[shape=diamond];
+    power_in[shape=box];
     rfid[shape=diamond];
     lcd[shape=diamond];
-    led_on;
-    led_off;
+    status_led;
+    next_but[shape=diamond];
+    select_but[shape=diamond];
+    radio[shape=box];
 
-    mains_in -> mains_fuse[label="240v"]
-    mains_fuse -> psu
-    mains_fuse -> ssr
-
-    mains_out[label="mains out"]
-    mains_in[label="mains in"]
-    mains_fuse[label="10A fuse"]
-    ssr[label="opto-isolated\n12A SSR\n+ heatsink"]
-
-    psu -> yun[label="5V @ 2A"]
-    ssr -> mains_out
-
-    psu[label="SMPS"]
+    power_in -> yun[label="5V @ 1A"];
+    power_in[label="5v in"]
 
     yun -> lcd[label="parallel"];
-    rfid -> yun[dir="both"]
-    temp -> yun;
+    yun -> radio;
+    rfid -> yun;
     yun -> beep;
-    yun -> led_on;
-    yun -> led_off;
-    yun -> ssr;
+    yun -> status_led;
+    next_but -> yun;
+    select_but -> yun;
 
-    led_on[label="green LED"]
-    led_off[label="red LED"]
+    next_but[label="next button"]
+    select_but[label="select button"]
+    status_led[label="status LED"]
 
 }

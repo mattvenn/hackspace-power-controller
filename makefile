@@ -1,4 +1,4 @@
-all: electrical.png software.png
+all: electronics/electrical.png software/software.png
 
 %.svg: %.dot
 	dot -Tsvg $< > $@
@@ -7,5 +7,5 @@ all: electrical.png software.png
 	convert -density 200 -resize 600 $< $@
 
 clean:
-	rm -f electrical.png software.png
+	rm -f electrical/electrical.png software/software.png
 
