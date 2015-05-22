@@ -137,4 +137,10 @@ to these figures allowed me to move things about to check fit.
 
 # Shortcomings
 
-* Super easy to bypass, but as used in a trusting environment, not seen as a big issue. A locking box could be made out of wood that would contain an extension lead end, the radio power switch and the end of the machine cable.
+* In many cases easy to bypass, but as used in a trusting environment, not seen as a big issue. A locking box could be made out of wood that would contain an extension lead end, the radio power switch and the end of the machine cable.
+
+# Licenses
+
+* Hardware is licensed under the [CERN open hardware license 1.2](http://www.ohwr.org/attachments/2388/cern_ohl_v_1_2.txt)
+
+* Software is licensed under a Creative Commons Attribution 4.0 International License.
