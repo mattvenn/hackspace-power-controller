@@ -37,7 +37,6 @@ translate([-40,0,97])
     translate([10,-30,0])
         {
         translate([0,50,0]) rotate([0,0,90]) lcd();
-        translate([0,0,0]) led();
         translate([-40,0,0]) switch();
         translate([40,0,0]) switch();
         }
