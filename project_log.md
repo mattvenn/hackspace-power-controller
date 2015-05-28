@@ -1,4 +1,36 @@
+# Todo
+
+* decide about power supply
+* decide about rotary encoder/buttons
+
+
 # 2015-05-28
+
+Had a look at 13.56MHz RFID readers and common (cheap) readers are all SPI and
+3.3v. So I might change the PCB layout to accomodate either the serial or SPI
+versions. 
+
+[Cheap RFID/NFC reader for 13.56MHz based on
+MFRC-522](http://www.ebay.co.uk/itm/261899995126)
+
+[Image of RFID reader
+pins](http://4.bp.blogspot.com/-CypWJHefOgY/U9AnzSpeEyI/AAAAAAAABao/fZKUC4YPNRk/s1600/RFID-RC522-pinout.png)
+
+[Library](https://github.com/miguelbalboa/rfid), supports different SS & Reset
+pins.
+
+Not sure about availability of SPI for Yun though, is it used for the
+bridge?
+
+[Yun spec](http://www.arduino.cc/en/Main/ArduinoBoardYun) says:
+
+* can handle SPI, though pins are connected to the wifi module
+* pins 0&1 used for bridge serial comms so avoid
+
+So will add header, using SS & Reset as the pins I'm using for the serial RFID's
+enable & data.
+
+# 2015-05-27
 
 Received the components for testing. For all part numbers and datasheets see the
 [bom.md](bom.md)
@@ -34,9 +66,9 @@ use for the hackspace.
 
 ## Rotary encoder
 
-I was initially thinking of using just 2 buttons. But I wanted to the option to
+I was initially thinking of using just 2 illuminated buttons. But I wanted to the option to
 use a rotary encoder in case that makes things more intuitive. I got a 12
-position detented type.
+position detented type to test.
 
 Used an Adafruit library (see [requirements.txt](code/requirements.txt)) to read
 the encoder. This works as expected.
@@ -44,7 +76,7 @@ the encoder. This works as expected.
 # 2015-05-22
 
 Got the Yun schematic so I could start thinking about pinouts. I'm thinking of
-making a simple, single sided PCB to keep things neat.
+making a simple, single sided PCB to keep things neat. Necessary?
 
 Worked out how much money the project cost and thought it was too high to be
 practical for anyone else. Had the idea of using wireless mains plugs. This
