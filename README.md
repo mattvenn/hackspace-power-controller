@@ -10,6 +10,10 @@ Usage time is logged for maintenance and billing purposes.
 
 Power is controlled via 433MHz remote mains power sockets.
 
+# Project log
+
+I've been making notes of [progress in the log](project_log.md)
+
 # Software
 
 ## Design decisions
@@ -24,95 +28,15 @@ Power is controlled via 433MHz remote mains power sockets.
 
 ![software](software/software.png)
 
-## LCD messages & Menu
+## User Interface
 
-Menu is driven by 2 illuminated buttons: next and select.
-
-Display after inactive for 5 seconds
-
-    --------------------
-    scan RFID to start
-    goto: ven.nz/1RFvu9s
-
-Unrecognised user.
-
-    --------------------
-    unrecognised RFID
-    goto: ven.nz/1RFvu9s
-
-user Matt recognised
-
-    --------------------
-    user: matt
-    press next for tools
-
-next button pressed - shows a tool ready to start
-
-    --------------------
-    1: lathe    inducted  
-    select to start
-
-next button pressed  - showing Nic is already using machine for 1 hour 21 secs
-
-    --------------------
-    2: mill     inducted
-    nic         00:01:21
-
-next button pressed - showing router is currently unavailable, with webpage for details
-
-    --------------------
-    3: router   offline
-    goto: ven.nz/1RFvu9s
-
-next button pressed - showing laser cutter, not inducted and webpage for detils
-
-    --------------------
-    4: laser    noinduct
-    goto: ven.nz/1RFvu9s
-
-select button pressed - showing saw available for use
-
-    --------------------
-    5: saw      inducted
-    select to start
-
-select button pressed - showing saw and option to stop
-
-    --------------------
-    5: saw      00:00:00
-    select to stop
-
-select button pressed - showing option 1 again
-
-    --------------------
-    1: lathe    inducted  
-    select to start
-
-## Beeper
-
-Beep when:
-
-* RFID is read
-* Button is pressed
-
-## LEDs
-
-Both buttons have green leds. 
-
-* Next button illuminated when valid user present
-* Select button illuminated when a choice is allowed
+See the [UI](ui.md) doc.
 
 # Electrical
 
 ## Bill of Materials
 
-* [Arduino Yun Mini]() - [datasheet](datasheets/Arduino-yun-mini-schematics.pdf)
-* [RFID reader](http://uk.rs-online.com/web/p/products/6666625/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/0d16/0900766b80d1684b.pdf)
-* [LCD 2x20](http://uk.rs-online.com/web/p/products/7200222/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/0f25/0900766b80f25e5b.pdf)
-* [case](http://uk.rs-online.com/web/p/general-purpose-enclosures/3648043/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/1252/0900766b81252789.pdf)
-* [433MHz ASK radio transmitter](http://uk.rs-online.com/web/p/lower-power-rf-modules/6172072/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/087d/0900766b8087d2df.pdf)
-* [2 switches](http://uk.rs-online.com/web/p/push-button-switches/8207533/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/1388/0900766b8138874b.pdf)
-* [buzzer](http://uk.rs-online.com/web/p/piezo-buzzer-components/7716910/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/1168/0900766b811685e8.pdf)
+See the [bom](bom.md)
 
 ## Wiring
 
@@ -141,7 +65,6 @@ Modelling the layout led to a case size of 280 x 120 x 90mm.
 But these dimensions didn't yield many cases! So I looked for some common sizes
 and found some that were 240 x 120 x 100mm. Setting the openscad case dimensions
 to these figures allowed me to move things about to check fit.
-
 
 # Shortcomings
 
