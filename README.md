@@ -4,6 +4,8 @@ A system for allowing inducted users to turn power on to various machines. Usage
 time is logged to a google spreadsheet. Inducted users are managed using a
 google spreadsheet.
 
+Shortlink: [http://ven.nz/hkspcpc](http://ven.nz/hkspcpc)
+
 # Project log
 
 I've been making notes of [progress in the log](project_log.md)

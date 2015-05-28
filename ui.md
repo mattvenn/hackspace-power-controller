@@ -6,13 +6,13 @@ Display after inactive for 5 seconds
 
     --------------------
     scan RFID to start
-    goto: ven.nz/1RFvu9s
+    goto: ven.nz/hkspcpc
 
 Unrecognised user.
 
     --------------------
     unrecognised RFID
-    goto: ven.nz/1RFvu9s
+    goto: ven.nz/hkspcpc
 
 user Matt recognised
 
@@ -36,13 +36,13 @@ next button pressed - showing router is currently unavailable, with webpage for 
 
     --------------------
     3: router   offline
-    goto: ven.nz/1RFvu9s
+    goto: ven.nz/hkspcpc
 
 next button pressed - showing laser cutter, not inducted and webpage for detils
 
     --------------------
     4: laser    noinduct
-    goto: ven.nz/1RFvu9s
+    goto: ven.nz/hkspcpc
 
 select button pressed - showing saw available for use
 
