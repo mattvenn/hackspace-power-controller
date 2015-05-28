@@ -17,6 +17,9 @@ thread](http://forum.pilight.org/Thread-Brennenstuhl-RC-3600) with more info,
 but no solution. It works well enough for a demo but I wouldn't recommend these
 units for home automation.
 
+Found this [list of codes](http://pastebin.com/RgQ4VCyw), which I've yet to
+compare against the 3 that I've decoded.
+
 ## LCD
 
 20x2 line standard LCD. Worked as expected.
