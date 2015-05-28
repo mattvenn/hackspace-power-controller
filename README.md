@@ -1,14 +1,8 @@
 # Hackspace RFID power switch & usage logger
 
-A system for logging usage and allowing inducted users to turn power up various machines.
-
-Valid inducted users are fetched from a list once per day.
-
-Inducted users use their RFID cards to turn on power to the connected machines.
-
-Usage time is logged for maintenance and billing purposes.
-
-Power is controlled via 433MHz remote mains power sockets.
+A system for allowing inducted users to turn power on to various machines. Usage
+time is logged to a google spreadsheet. Inducted users are managed using a
+google spreadsheet.
 
 # Project log
 
