@@ -2,39 +2,37 @@ strict digraph G {
     start;
     lcd[shape=box];
     check_rfid[shape=diamond];
+    beep[shape=box];
     wait[shape=box];
     check_user[shape=diamond];
-    machine_running[shape=diamond];
-    same_user[shape=diamond];
     turn_on[shape=box];
     turn_off[shape=box];
     bad_user[shape=box];
     log[shape=box];
+    menu[shape=box];
 
     start -> lcd;
     
     lcd -> check_rfid;
     lcd[label="update LCD"];
 
-    check_rfid -> check_user[label="yes"];
+    check_rfid -> beep[label="yes"];
+    beep -> check_user;
     check_rfid -> wait[label="no"];
     check_rfid[label="rfid present?"];
     wait -> lcd;
 
-    check_user -> log[label="yes"];
+    check_user -> menu[label="yes"]
     check_user[label="valid user?"];
     check_user -> bad_user[label="no"];
-   
-    log -> machine_running;
-    log[label="log user & time\nto internet"];
-    machine_running -> same_user[label="yes"];
-    machine_running -> turn_on[label="no"];
-    machine_running[label="machine running?"];
-    same_user -> lcd[label="no"]
-    same_user -> turn_off[label="yes"]
-    same_user[label="user same as last?"]
 
-    bad_user[label="not inducted"];
+    menu -> turn_on;
+    menu -> turn_off;
+    menu -> log;
+   
+    log[label="log user & time\nto internet"];
+
+    bad_user[label="show web address"];
     bad_user -> lcd;
     turn_off[label="turn off"];
     turn_on[label="turn on"];

@@ -8,10 +8,6 @@ yun_h = 10;
 switch_d = 8;
 switch_h = 20; //including tabs
 
-// LED = 12mm diameter
-led_d = 12;
-led_h = 15;
-
 // RFID = 62 x 82 x ?
 rfid_l = 62;
 rfid_w = 82;
@@ -22,26 +18,25 @@ lcd_l = 37;
 lcd_w = 116;
 lcd_h = 10;
 
-case_a1 = 233;
-case_a2 = 214;
-case_b1 = 113;
-case_b2 = 76;
-case_c1 = 25;
-case_c2 = 96;
+case_a1 = 243.4;
+case_a2 = 224.6;
+case_b1 = 153.4;
+case_b2 = 115.6;
+case_c1 = 15;
+case_c2 = 51;
 
 screw_r = 1.5;
 
 // stuff on the base
-translate([75,0,0]) rotate([0,0,90]) yun();
+translate([0,0,0]) yun();
 
 // stuff on the lid
-translate([-40,0,97])
+translate([-40,0,case_c2])
 {
     translate([110,0,-5]) rfid();
     translate([10,-30,0])
         {
         translate([0,50,0]) rotate([0,0,90]) lcd();
-        translate([0,0,0]) led();
         translate([-40,0,0]) switch();
         translate([40,0,0]) switch();
         }
