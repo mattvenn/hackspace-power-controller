@@ -32,3 +32,24 @@ String check_rfid()
   }
   return id;
 }
+
+
+int get_user_id(String rfid)
+{
+    for(int i = 0; i < num_users; i ++)
+    {
+        if(users[i].rfid == rfid)
+            return i;
+    }
+    return -1;
+}
+
+bool is_inducted(int user_id, int tool_id)
+{
+    for(int i = 0; i < num_users; i ++)
+    {
+        if(tools[tool_id].users[i] == user_id)
+            return true;
+    }
+    return false;
+}
