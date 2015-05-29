@@ -1,3 +1,2 @@
-/home/mattvenn/Downloads/AdaEncoder-0.8-rc1.zip
-/home/mattvenn/Downloads/ooPinChangeInt-1.06-rc2.zip
-RCSwitch
+Rotary https://github.com/brianlow/Rotary
+RCSwitch https://github.com/sui77/rc-switch

@@ -1,19 +1,13 @@
+#ifdef USE_ENCODER
+#include <Rotary.h>
+Rotary r = Rotary(ENCA_a, ENCA_b);
+
+int clicks = 0;
 void check_encoder()
 {
-  AdaEncoder *thisEncoder=NULL;
-  thisEncoder=AdaEncoder::genie();
-  if (thisEncoder != NULL) {
-    clicks=thisEncoder->query();
-    if (clicks > 0) {
-
-      count += 1;
-      Serial.println(count);
-      
-    }
-    if (clicks < 0) {
-
-       count -= 1;
-             Serial.println(count);
-    }
+  unsigned char result = r.process();
+  if (result) {
+    Serial.println(result == DIR_CW ? "Right" : "Left");
   }
 }
+#endif
