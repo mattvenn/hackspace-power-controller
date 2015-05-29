@@ -66,26 +66,30 @@ void setup()
 
 void loop() 
 {
-    //check for rfid
-    String rfid = check_rfid();
-    if(rfid != "")
+    //if no session
+    if(!session_running(user_id))
     {
-        user_id = get_user_id(rfid);
-        //valid user id?
-        if(user_id >=0)
+        //check for rfid
+        String rfid = check_rfid();
+        if(rfid != "")
         {
-            Serial.println("valid id");
-            //say hi
-            lcd_valid_user(user_id);
-            delay(LCD_TIMEOUT);
-            session_start();
-            lcd_show_tool(tool_id, user_id);
-        }
-        else
-        {
-            lcd_invalid_user();
-            delay(LCD_TIMEOUT);
-            lcd_start();
+            user_id = get_user_id(rfid);
+            //valid user id?
+            if(user_id >=0)
+            {
+                Serial.println("valid id");
+                //say hi
+                lcd_valid_user(user_id);
+                delay(LCD_TIMEOUT);
+                session_start();
+                lcd_show_tool(tool_id, user_id);
+            }
+            else
+            {
+                lcd_invalid_user();
+                delay(LCD_TIMEOUT);
+                lcd_start();
+            }
         }
     }
 

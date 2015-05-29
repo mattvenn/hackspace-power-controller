@@ -61,6 +61,13 @@ void session_start()
     session_time = millis();
 }
 
+bool session_running(int user_id)
+{
+    if(user_id >= 0 && ! session_timed_out())
+        return true;
+    return false;
+}
+
 bool session_timed_out()
 {
     if((millis() - session_time) > SESSION_TIMEOUT)
