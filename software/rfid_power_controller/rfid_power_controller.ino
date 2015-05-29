@@ -10,6 +10,7 @@
 
 //UI defs
 #define LCD_TIMEOUT 500 //time we spend before changing screen
+#define SESSION_TIMEOUT 5000 //time before session times out
 
 // initialize the library with the numbers of the interface pins
 //rs enable d4,5,6,7
@@ -40,6 +41,7 @@ struct user users[num_users];
 int enc_clicks = 0; //encoder enc_clicks
 int tool_id = 0; //what page is showing on lcd
 int user_id = -1;
+double session_time;
 
 void setup()
 {
@@ -76,9 +78,8 @@ void loop()
             //say hi
             lcd_valid_user(user_id);
             delay(LCD_TIMEOUT);
-            tool_id = 0;
+            session_start();
             lcd_show_tool(tool_id, user_id);
-            enc_clicks = 0;
         }
         else
         {
@@ -88,6 +89,10 @@ void loop()
         }
     }
 
+    //timeout a validated user
+    if(user_id >= 0 && session_timed_out())
+        session_end();
+       
     //we have a valid user, so let them use the encoder to select tools
     if(user_id >= 0)
     {
@@ -101,6 +106,7 @@ void loop()
         //different to last time? update display
         if(tool_id != enc_clicks)
         {
+            session_refresh();
             tool_id = enc_clicks;
             Serial.print("showing tool id: ");
             Serial.println(enc_clicks);
@@ -113,6 +119,7 @@ void loop()
             if(digitalRead(BUT) == LOW)
             {
                 Serial.println("button pressed");
+                session_refresh();
                 //running
                 if(tools[tool_id].running)
                 {

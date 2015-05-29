@@ -19,11 +19,11 @@ void setup_users()
 void setup_tools()
 {
     tools[0].tool_name = "lathe";
-    int t0[] = {  1 };
+    int t0[] = {  1, 1 };
     memcpy(tools[0].users, t0, sizeof t0);
 
     tools[1].tool_name = "mill";
-//    tools[1].operational = false;
+    tools[1].operational = false;
     int t1[] = { 0, 1 };
     memcpy(tools[1].users, t1, sizeof t1);
 
@@ -33,6 +33,6 @@ void setup_tools()
     memcpy(tools[2].users, t2, sizeof t2);
 
     tools[3].tool_name = "saw";
-    int t3[] = { 0 };
+    int t3[] = { 0, 0 };
     memcpy(tools[3].users, t3, sizeof t3);
 }

@@ -53,3 +53,31 @@ bool is_inducted(int user_id, int tool_id)
     }
     return false;
 }
+
+void session_start()
+{
+    tool_id = 0;
+    enc_clicks = 0;
+    session_time = millis();
+}
+
+bool session_timed_out()
+{
+    if((millis() - session_time) > SESSION_TIMEOUT)
+        return true;
+    return false;
+}
+
+void session_end()
+{
+    Serial.println("session timed out");
+    user_id = -1;
+    lcd_session_timeout();
+    delay(LCD_TIMEOUT);
+    lcd_start();
+}
+
+void session_refresh()
+{
+    session_time = millis();
+}

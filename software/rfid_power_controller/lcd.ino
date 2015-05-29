@@ -16,6 +16,13 @@ void lcd_start()
   lcd.print("goto: ven.nz/hkspcpc");
 }
 
+void lcd_session_timeout()
+{
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("access timed out");
+}
+
 void lcd_valid_user(int user_id)
 {
   lcd.clear();
