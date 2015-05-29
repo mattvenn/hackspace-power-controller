@@ -6,8 +6,8 @@ RCSwitch mySwitch = RCSwitch();
 void setup_radio() {
 
   // Transmitter is connected to Arduino Pin #10  
- pinMode(3,OUTPUT);
-  mySwitch.enableTransmit(3);
+  pinMode(RADIO_TX,OUTPUT);
+  mySwitch.enableTransmit(RADIO_TX);
  
   // Optional set protocol (default is 1, will work for most outlets)
    mySwitch.setProtocol(2);
@@ -16,20 +16,40 @@ void setup_radio() {
    mySwitch.setPulseLength(500);
   
   // Optional set number of transmission repetitions.
-   mySwitch.setRepeatTransmit(6);  
+   mySwitch.setRepeatTransmit(20);  
 }
 
-void turn_on()
+void radio_turn_on(int tool_id)
 {
-
- // mySwitch.send("101001000110001010101100"); //1
-    mySwitch.send("101011011010011000000101"); //2
-//  mySwitch.send("101000001100100101111110"); //3
-
+    switch(tool_id)
+    {
+        case 0:
+            mySwitch.send("101001000110001010101100"); //1
+            break;
+        case 1:
+            mySwitch.send("101011011010011000000101"); //2
+            break;
+        case 2:
+            mySwitch.send("101000001100100101111110"); //3
+            break;
+        default:
+            Serial.println("no such tool id");
+    }
 }
-void turn_off()
+void radio_turn_off(int tool_id)
 {
- // mySwitch.send("101001110111110010111100"); //1
-    mySwitch.send("101000010101101001000101"); //2
- // mySwitch.send("101010111011000001011110"); //3
+    switch(tool_id)
+    {
+        case 0:
+            mySwitch.send("101001110111110010111100"); //1
+            break;
+        case 1:
+            mySwitch.send("101000010101101001000101"); //2
+            break;
+        case 2:
+            mySwitch.send("101010111011000001011110"); //3
+            break;
+        default:
+            Serial.println("no such tool id");
+    }
 }
