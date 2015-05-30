@@ -9,7 +9,7 @@
 #include <LiquidCrystal.h>
 
 //UI defs
-#define LCD_TIMEOUT 500 //time we spend before changing screen
+#define LCD_TIMEOUT 1000 //time we spend before changing screen
 #define SESSION_TIMEOUT 5000 //time before session times out
 
 // initialize the library with the numbers of the interface pins
@@ -18,6 +18,17 @@ LiquidCrystal lcd(8,9,10,11,12,13);
 
 #define num_tools 4
 #define num_users 2
+
+#define S_USER_START 3
+#define S_USER_IDLE 0
+#define S_USER_CHECK_RFID 1
+#define S_USER_WAIT_CONTROL 2
+#define S_USER_UNKNOWN 4
+#define S_USER_TIMEOUT 5
+#define S_USER_UPDATE_LCD 6
+#define S_USER_BUTTON 7
+
+int fsm_state_user = S_USER_START;
 
 struct tool
 {
@@ -63,39 +74,123 @@ void setup()
 
     lcd_start();
 }
+unsigned int msCounts = 0;
 
 void loop() 
 {
-    //check for rfid
-    String rfid = check_rfid();
-    if(rfid != "")
+    switch(fsm_state_user)
     {
-        user_id = get_user_id(rfid);
-        //valid user id?
-        if(user_id >=0)
-        {
-            Serial.println("valid id");
-            //say hi
-            lcd_valid_user(user_id);
-            delay(LCD_TIMEOUT);
-            session_start();
-            lcd_show_tool(tool_id, user_id);
-        }
-        else
-        {
-            lcd_invalid_user();
-            delay(LCD_TIMEOUT);
+        case S_USER_START:
             lcd_start();
+            fsm_state_user = S_USER_IDLE;
+            msCounts = 0;
+            break;
+        case S_USER_IDLE:
+         if(msCounts >= 100)
+                fsm_state_user = S_USER_CHECK_RFID;
+            break;
+        case S_USER_CHECK_RFID:
+        {
+            String rfid = check_rfid();
+            if(rfid != "")
+            {
+                user_id = get_user_id(rfid);
+                //valid user id?
+                if(user_id >=0)
+                {
+                    Serial.println("valid id");
+                    msCounts = 0;
+                    fsm_state_user = S_USER_WAIT_CONTROL;
+                    lcd_valid_user(user_id);
+                }
+                else
+                {
+                    fsm_state_user = S_USER_UNKNOWN;
+                    msCounts = 0;
+                    lcd_invalid_user();
+                }
+            }
+            else
+            {
+                msCounts = 0;
+                fsm_state_user = S_USER_IDLE;
+            } 
+            break;
         }
+        case S_USER_UNKNOWN:
+             if(msCounts >= LCD_TIMEOUT)
+                fsm_state_user = S_USER_START;
+            break;
+        case S_USER_WAIT_CONTROL:
+            if(check_controls())
+                fsm_state_user = S_USER_UPDATE_LCD;
+             if(msCounts >= SESSION_TIMEOUT)
+             {
+                fsm_state_user = S_USER_TIMEOUT;
+                msCounts = 0;
+                lcd_session_timeout();
+            }
+            break;
+        case S_USER_UPDATE_LCD:
+                //tool out of use
+                if(tools[tool_id].operational == false)
+                {
+                    lcd_show_tool_offline();
+                }
+                //is inducted?
+                else if(! is_inducted(user_id, tool_id))
+                {
+                    lcd_show_tool_noinduct();
+                }
+                //it's not running
+                else if(not tools[tool_id].running)
+                {
+                    lcd_show_tool_start(tool_id, user_id);
+                    fsm_state_user = S_USER_BUTTON;
+                }
+                //it's running and we're the user
+                else if(tools[tool_id].current_user == user_id)
+                {
+                    lcd_show_tool_stop(tool_id, user_id);
+                    fsm_state_user = S_USER_BUTTON;
+                }
+                //it's running and we're not the user
+                else
+                {
+                    lcd_show_tool_in_use(tool_id);
+                    fsm_state_user = S_USER_BUTTON;
+                }
+                msCounts = 0;
+                fsm_state_user = S_USER_WAIT_CONTROL;
+                break;
+            
+        case S_USER_BUTTON:
+             if(digitalRead(BUT) == LOW)
+             {
+                if(tools[tool_id].running)
+                    stop_tool();
+                else
+                    start_tool();
+            }
+            fsm_state_user = S_USER_WAIT_CONTROL;
+            break;
+        case S_USER_TIMEOUT:
+            if(msCounts >= LCD_TIMEOUT)
+                 fsm_state_user = S_USER_START;
+             break;
+            
     }
+    //Time keeping:
+  delay(1);              // wait for a millisecond
+  if(msCounts < 0xFFFF)  // Don't let the msCounts overflow
+  {
+    msCounts++;
+  }
+}
+        
 
-    //timeout a validated user
-    if(user_id >= 0 && session_timed_out())
-        session_end();
-       
-    //we have a valid user, so let them use the encoder to select tools
-    if(user_id >= 0)
-    {
+bool check_controls()
+{
         check_encoder();
         //limit to num of tools available
         if(enc_clicks < 0)
@@ -110,42 +205,32 @@ void loop()
             tool_id = enc_clicks;
             Serial.print("showing tool id: ");
             Serial.println(enc_clicks);
-            lcd_show_tool(tool_id, user_id);
+            return true;
         }
+        if(digitalRead(BUT) == LOW)
+            return true;
 
-        //we only care about button presses if a valid user & inducted
-        if(is_inducted(user_id, tool_id) && tools[tool_id].operational)
-        {
-            if(digitalRead(BUT) == LOW)
-            {
-                Serial.println("button pressed");
-                session_refresh();
-                //running
-                if(tools[tool_id].running)
-                {
-                    //only turn off if we're the current user
-                    if(tools[tool_id].current_user == user_id)
-                    {
-                        tools[tool_id].running = false;
-                        //log time & turn off
-                        radio_turn_off(tool_id);
-                        Serial.println("logging tool off time");
-                    }
-                }
-                else
-                {
-                    //log time & turn on
-                    tools[tool_id].running = true;
-                    tools[tool_id].time = millis()/1000;
-                    tools[tool_id].current_user = user_id;
-                    Serial.println("logging tool on time");
-                    radio_turn_on(tool_id);
-                }
-
-                //update lcd
-                lcd_show_tool(tool_id, user_id);
-            }
-        }
-    }
+        return false;
 }
 
+void stop_tool()
+{
+    //running
+        //only turn off if we're the current user
+        if(tools[tool_id].current_user == user_id)
+        {
+            tools[tool_id].running = false;
+            //log time & turn off
+            radio_turn_off(tool_id);
+            Serial.println("logging tool off time");
+        }
+}
+void start_tool()
+    {
+        //log time & turn on
+        tools[tool_id].running = true;
+        tools[tool_id].time = millis()/1000;
+        tools[tool_id].current_user = user_id;
+        Serial.println("logging tool on time");
+        radio_turn_on(tool_id);
+    }

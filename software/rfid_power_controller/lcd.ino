@@ -42,7 +42,34 @@ void lcd_invalid_user()
     lcd.print("goto: ven.nz/hkspcpc");
 }
 
-void lcd_show_tool(int tool_id, int user_id)
+void lcd_show_tool_offline()
+{
+    lcd.print("offline");
+    lcd.setCursor(0, 1);
+    lcd.print("goto: ven.nz/hkspcpc");
+    //button not available, so turn off light
+    digitalWrite(BUT_LED, LOW);
+}
+
+void lcd_show_tool_noinduct()
+{
+    digitalWrite(BUT_LED, LOW);
+    lcd.print("noinduct");
+    lcd.setCursor(0, 1);
+    lcd.print("goto: ven.nz/hkspcpc");
+
+}
+
+void lcd_show_tool_in_use(int tool_id)
+{
+    int current_user = tools[tool_id].current_user;
+    digitalWrite(BUT_LED, LOW);
+    lcd.setCursor(0, 1);
+    lcd.print(users[current_user].user_name);
+    lcd.setCursor(LCD_WIDTH - 8, 1);
+    lcd.print(lcd_format_time(tools[tool_id].time));
+}
+void lcd_show_tool_stop(int tool_id, int user_id)
 {
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -51,51 +78,18 @@ void lcd_show_tool(int tool_id, int user_id)
     lcd.print(tools[tool_id].tool_name);
     lcd.setCursor(LCD_WIDTH - 8, 0);
 
-    if(tools[tool_id].operational == false)
-    {
-        lcd.print("offline");
-        lcd.setCursor(0, 1);
-        lcd.print("goto: ven.nz/hkspcpc");
-        //button not available, so turn off light
-        digitalWrite(BUT_LED, LOW);
-    }
-    else if(is_inducted(user_id, tool_id))
-    {
-        lcd.print("inducted");
-        if(tools[tool_id].running)
-        {
-            if(tools[tool_id].current_user == user_id)
-            {
-                digitalWrite(BUT_LED, HIGH);
-                lcd.setCursor(0, 1);
-                lcd.print("select to stop");
-            }
-            else
-            {
-                int current_user = tools[tool_id].current_user;
-                digitalWrite(BUT_LED, LOW);
-                lcd.setCursor(0, 1);
-                lcd.print(users[current_user].user_name);
-                lcd.setCursor(LCD_WIDTH - 8, 1);
-                lcd.print(lcd_format_time(tools[tool_id].time));
-            }
-        }
-        else
-        {
-            digitalWrite(BUT_LED, HIGH);
-            lcd.setCursor(0, 1);
-            lcd.print("select to start");
-        } 
-    }
-    else
-    {
-        digitalWrite(BUT_LED, LOW);
-        lcd.print("noinduct");
-        lcd.setCursor(0, 1);
-        lcd.print("goto: ven.nz/hkspcpc");
-    }
-
+    lcd.print("inducted");
+    digitalWrite(BUT_LED, HIGH);
+    lcd.setCursor(0, 1);
+    lcd.print("select to stop");
 }
+
+void lcd_show_tool_start(int tool_id, int user_id)
+{
+    digitalWrite(BUT_LED, HIGH);
+    lcd.setCursor(0, 1);
+    lcd.print("select to start");
+} 
 
 int lcd_format_time(int seconds)
 {
