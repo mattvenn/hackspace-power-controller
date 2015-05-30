@@ -1,3 +1,10 @@
+'''
+see the gspread docs:
+http://gspread.readthedocs.org/en/latest/oauth2.html
+
+for info in getting oauth2 setup. 
+When you've got the json file downloaded, move it to secrets.json
+'''
 import gspread
 import json
 import argparse
