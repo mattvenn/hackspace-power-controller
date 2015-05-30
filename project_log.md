@@ -3,6 +3,48 @@
 * decide about power supply
 * decide about rotary encoder/buttons
 
+# 2015-05-30
+
+Testing Yun cloud stuff. Temboo seems cool, but the only way to get columns of
+data seems to be using a json or xml based fetch. Fetching 100 rows of user info
+ended up being 200k of json! 
+
+Made a help request and very quickly got told about adding output filters like
+this:
+
+    RetrieveSpecificRowsOrColumnsChoreo.addOutputFilter("users", "/entry[]/content","Response");
+
+Which filters that 200k down to just the bits I need. So that's looking good.
+The problem though is that my menu/rfid/lcd stuff is taking about 13k (60%) of
+program space on the Yun. The Temboo demo for just fetching the user names comes
+out at 13k (45%). So even with the output filtering I don't think the program
+size is feasible.
+
+So...
+Now looking into a python script that does the spreadsheet stuff and can be
+called via the bridge library. It could fetch all users and then cache them to
+disk making subsequenct calls fast.
+
+Got [something working](software/spreadsheet/fetch.py) so wanted to test on Yun. OpenWRT doesn't come with pip or
+openssl, so with some [googling found
+this](http://samjbrenner.com/notes/using-pip-to-install-python-packages-on-the-arduino-yun/).
+
+Pip installed ok though I was amazed at the amount of disk it needs. The Yun
+only has about 6.6MB for playing with, so it will be hard to get all these
+packages installed.
+
+I'm trying to avoid pip now and install things from downloaded packages, and
+using opkg as much as possible. 
+
+The stumbling block now is getting the python ssl stuff working. Most of it
+seems to install ok, but it has a dependency on cffi. This seems to need to be
+compiled and of course the Yun doesn't come with a compiler...
+
+
+# 2015-05-29
+
+Train hacking! Got LCD, RFID, encoder and button working on the train up to
+Leeds.
 
 # 2015-05-28
 
