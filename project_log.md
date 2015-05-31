@@ -3,6 +3,27 @@
 * decide about power supply
 * decide about rotary encoder/buttons
 
+# 2015-05-31
+
+Finally found a way of doing oauth2 with python without the google oauth2.client
+library that has too many dependencies: gdata. This is another google library
+for interacting with the google apis. It has built in oauth2 client and can be
+installed on the yun:
+
+wget
+https://pypi.python.org/packages/source/g/gdata/gdata-2.0.18.tar.gz#md5=13b6e6dd8f9e3e9a8e005e05a832940
+8 --no-check-certificate
+
+python setup.py install
+opkg install python-expat
+
+oauth stuff:
+
+setup in https://console.developers.google.com
+Client ID for native application, download json and save to secrets.json
+run ./fetch.py --auth-token
+follow the url, then tokens will be added and saved to secrets.json
+
 # 2015-05-30
 
 Testing Yun cloud stuff. Temboo seems cool, but the only way to get columns of
@@ -40,6 +61,8 @@ The stumbling block now is getting the python ssl stuff working. Most of it
 seems to install ok, but it has a dependency on cffi. This seems to need to be
 compiled and of course the Yun doesn't come with a compiler...
 
+Trying an older version of oauth2client 1.4.3, still uses pyOpenSSL which has
+the cffi dependency.
 
 # 2015-05-29
 
