@@ -36,6 +36,33 @@ String check_rfid()
 
 int get_user_id(String rfid)
 {
+    Process p;
+    String command = "/root/spreadsheet/fetch.py --check-rfid " + rfid;
+    Serial.println(command);
+    p.runShellCommand(command);
+
+    if(p.exitValue() != 0)
+        return -1;
+
+    int id = 0;
+    String name = "";
+
+    if(p.available())
+        id = p.parseInt();
+
+    while(p.available()) 
+    {
+        char c = p.read();
+        if(c!='\n')
+            name += c;
+    }
+    Serial.println(name);
+    Serial.println(id);
+    return id;
+}
+/*
+int get_user_id(String rfid)
+{
     for(int i = 0; i < num_users; i ++)
     {
         if(users[i].rfid == rfid)
@@ -43,6 +70,7 @@ int get_user_id(String rfid)
     }
     return -1;
 }
+*/
 
 bool is_inducted(int user_id, int tool_id)
 {
@@ -88,3 +116,5 @@ void session_refresh()
 {
     session_time = millis();
 }
+
+

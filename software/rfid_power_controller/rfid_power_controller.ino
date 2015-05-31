@@ -7,6 +7,7 @@
 #define BUT_LED 5
 #define RADIO_TX 3
 #include <LiquidCrystal.h>
+#include <Process.h>
 
 //UI defs
 #define LCD_TIMEOUT 500 //time we spend before changing screen
@@ -62,6 +63,14 @@ void setup()
     setup_users();
 
     lcd_start();
+
+    Bridge.begin();	// Initialize the Bridge
+
+    // Wait until a Serial Monitor is connected.
+    while (!Serial);
+
+    //get_user_id("04184A4FC6"); //correct
+    Serial.println(get_user_id("04184A4FC5"));
 }
 
 void loop() 
