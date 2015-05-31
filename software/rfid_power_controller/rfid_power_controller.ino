@@ -19,14 +19,18 @@ LiquidCrystal lcd(8,9,10,11,12,13);
 #define num_tools 4
 #define num_users 2
 
-#define S_USER_START 3
-#define S_USER_IDLE 0
-#define S_USER_CHECK_RFID 1
-#define S_USER_WAIT_CONTROL 2
-#define S_USER_UNKNOWN 4
-#define S_USER_TIMEOUT 5
-#define S_USER_UPDATE_LCD 6
-#define S_USER_BUTTON 7
+#define S_USER_START 0
+#define S_USER_IDLE 1
+#define S_USER_CHECK_RFID 2
+#define S_USER_VALID 3
+#define S_USER_WAIT_CONTROL 4
+#define S_USER_UNKNOWN 5
+#define S_USER_TIMEOUT 6
+#define S_USER_UPDATE_LCD 7
+#define S_USER_BUTTON 8
+#define S_USER_START_TOOL 9
+#define S_USER_STOP_TOOL 10
+#define S_USER_WAIT_RADIO 11
 
 int fsm_state_user = S_USER_START;
 
@@ -50,6 +54,7 @@ struct tool tools[num_tools];
 struct user users[num_users];
 
 int enc_clicks = 0; //encoder enc_clicks
+bool button_pressed = false; //button is pressed
 int tool_id = 0; //what page is showing on lcd
 int user_id = -1;
 double session_time;
@@ -100,8 +105,8 @@ void loop()
                 {
                     Serial.println("valid id");
                     msCounts = 0;
-                    fsm_state_user = S_USER_WAIT_CONTROL;
-                    lcd_valid_user(user_id);
+                    fsm_state_user = S_USER_VALID;
+                    lcd_valid_user();
                 }
                 else
                 {
@@ -117,6 +122,10 @@ void loop()
             } 
             break;
         }
+        case S_USER_VALID:
+            if(msCounts >= LCD_TIMEOUT)
+                fsm_state_user = S_USER_UPDATE_LCD;
+            break;
         case S_USER_UNKNOWN:
              if(msCounts >= LCD_TIMEOUT)
                 fsm_state_user = S_USER_START;
@@ -135,47 +144,70 @@ void loop()
                 //tool out of use
                 if(tools[tool_id].operational == false)
                 {
-                    lcd_show_tool_offline();
+                    digitalWrite(BUT_LED, LOW);
+                    lcd_tool_offline();
                 }
                 //is inducted?
                 else if(! is_inducted(user_id, tool_id))
                 {
-                    lcd_show_tool_noinduct();
+                    digitalWrite(BUT_LED, LOW);
+                    lcd_tool_noinduct();
                 }
                 //it's not running
                 else if(not tools[tool_id].running)
                 {
-                    lcd_show_tool_start(tool_id, user_id);
-                    fsm_state_user = S_USER_BUTTON;
+                    digitalWrite(BUT_LED, HIGH);
+                    if(button_pressed)
+                    {
+                        fsm_state_user = S_USER_START_TOOL;
+                        button_pressed = false;
+                        break;
+                    }
+                    lcd_tool_start();
                 }
                 //it's running and we're the user
                 else if(tools[tool_id].current_user == user_id)
                 {
-                    lcd_show_tool_stop(tool_id, user_id);
-                    fsm_state_user = S_USER_BUTTON;
+                    digitalWrite(BUT_LED, HIGH);
+                    if(button_pressed)
+                    {
+                        fsm_state_user = S_USER_STOP_TOOL;
+                        button_pressed = false;
+                        break;
+                    }
+                    lcd_tool_stop();
                 }
                 //it's running and we're not the user
                 else
                 {
-                    lcd_show_tool_in_use(tool_id);
-                    fsm_state_user = S_USER_BUTTON;
+                    digitalWrite(BUT_LED, LOW);
+                    lcd_tool_in_use();
                 }
                 msCounts = 0;
                 fsm_state_user = S_USER_WAIT_CONTROL;
                 break;
             
-        case S_USER_BUTTON:
-             if(digitalRead(BUT) == LOW)
-             {
-                if(tools[tool_id].running)
-                    stop_tool();
-                else
-                    start_tool();
-            }
-            fsm_state_user = S_USER_WAIT_CONTROL;
-            break;
-        case S_USER_TIMEOUT:
+        case S_USER_START_TOOL:
+                msCounts = 0;
+                lcd_wait_radio();
+                start_tool();
+                fsm_state_user = S_USER_WAIT_RADIO;
+                break;
+
+        case S_USER_STOP_TOOL:
+                msCounts = 0;
+                lcd_wait_radio();
+                stop_tool();
+                fsm_state_user = S_USER_WAIT_RADIO;
+                break;
+
+        case S_USER_WAIT_RADIO:
             if(msCounts >= LCD_TIMEOUT)
+                fsm_state_user = S_USER_UPDATE_LCD;
+            break;
+            
+        case S_USER_TIMEOUT:
+            if(msCounts >= SESSION_TIMEOUT)
                  fsm_state_user = S_USER_START;
              break;
             
@@ -208,29 +240,31 @@ bool check_controls()
             return true;
         }
         if(digitalRead(BUT) == LOW)
+        {
+            button_pressed = true;
+            //debounce
+            while(digitalRead(BUT) == LOW)
+                ;;
             return true;
+        }
 
         return false;
 }
 
 void stop_tool()
 {
-    //running
-        //only turn off if we're the current user
-        if(tools[tool_id].current_user == user_id)
-        {
-            tools[tool_id].running = false;
-            //log time & turn off
-            radio_turn_off(tool_id);
-            Serial.println("logging tool off time");
-        }
+    tools[tool_id].running = false;
+    //log time & turn off
+    radio_turn_off(tool_id);
+    Serial.println("logging tool off time");
 }
+
 void start_tool()
-    {
-        //log time & turn on
-        tools[tool_id].running = true;
-        tools[tool_id].time = millis()/1000;
-        tools[tool_id].current_user = user_id;
-        Serial.println("logging tool on time");
-        radio_turn_on(tool_id);
-    }
+{
+    //log time & turn on
+    tools[tool_id].running = true;
+    tools[tool_id].time = millis()/1000;
+    tools[tool_id].current_user = user_id;
+    Serial.println("logging tool on time");
+    radio_turn_on(tool_id);
+}
