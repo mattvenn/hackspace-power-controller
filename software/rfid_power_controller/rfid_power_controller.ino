@@ -91,7 +91,7 @@ void loop()
             msCounts = 0;
             break;
         case S_USER_IDLE:
-         if(msCounts >= 100)
+            if(msCounts >= 100)
                 fsm_state_user = S_USER_CHECK_RFID;
             break;
         case S_USER_CHECK_RFID:
@@ -105,6 +105,8 @@ void loop()
                 {
                     Serial.println("valid id");
                     msCounts = 0;
+                    tool_id = 0;
+                    enc_clicks = 0;
                     fsm_state_user = S_USER_VALID;
                     lcd_valid_user();
                 }
@@ -122,41 +124,43 @@ void loop()
             } 
             break;
         }
+
         case S_USER_VALID:
             if(msCounts >= LCD_TIMEOUT)
                 fsm_state_user = S_USER_UPDATE_LCD;
             break;
+
         case S_USER_UNKNOWN:
-             if(msCounts >= LCD_TIMEOUT)
+            if(msCounts >= LCD_TIMEOUT)
                 fsm_state_user = S_USER_START;
             break;
+
         case S_USER_WAIT_CONTROL:
             if(check_controls())
                 fsm_state_user = S_USER_UPDATE_LCD;
-             if(msCounts >= SESSION_TIMEOUT)
-             {
+            //if user doesn't do anything for long enough, time out 
+            if(msCounts >= SESSION_TIMEOUT)
+            {
                 fsm_state_user = S_USER_TIMEOUT;
                 msCounts = 0;
                 lcd_session_timeout();
             }
             break;
+
         case S_USER_UPDATE_LCD:
                 //tool out of use
                 if(tools[tool_id].operational == false)
                 {
-                    digitalWrite(BUT_LED, LOW);
                     lcd_tool_offline();
                 }
                 //is inducted?
                 else if(! is_inducted(user_id, tool_id))
                 {
-                    digitalWrite(BUT_LED, LOW);
                     lcd_tool_noinduct();
                 }
                 //it's not running
                 else if(not tools[tool_id].running)
                 {
-                    digitalWrite(BUT_LED, HIGH);
                     if(button_pressed)
                     {
                         fsm_state_user = S_USER_START_TOOL;
@@ -168,7 +172,6 @@ void loop()
                 //it's running and we're the user
                 else if(tools[tool_id].current_user == user_id)
                 {
-                    digitalWrite(BUT_LED, HIGH);
                     if(button_pressed)
                     {
                         fsm_state_user = S_USER_STOP_TOOL;
@@ -180,7 +183,6 @@ void loop()
                 //it's running and we're not the user
                 else
                 {
-                    digitalWrite(BUT_LED, LOW);
                     lcd_tool_in_use();
                 }
                 msCounts = 0;
@@ -207,7 +209,7 @@ void loop()
             break;
             
         case S_USER_TIMEOUT:
-            if(msCounts >= SESSION_TIMEOUT)
+            if(msCounts >= LCD_TIMEOUT)
                  fsm_state_user = S_USER_START;
              break;
             
@@ -233,7 +235,6 @@ bool check_controls()
         //different to last time? update display
         if(tool_id != enc_clicks)
         {
-            session_refresh();
             tool_id = enc_clicks;
             Serial.print("showing tool id: ");
             Serial.println(enc_clicks);
