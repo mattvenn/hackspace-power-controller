@@ -5,6 +5,7 @@ SoftwareSerial rfid_serial(RFID_RX, RFID_TX); // RX, TX
 void setup_rfid()
 {
     rfid_serial.begin(2400);
+    rfid_serial.setTimeout(10);
     //turn on rfid
     pinMode(RFID_NOT_ENABLE, OUTPUT);
     digitalWrite(RFID_NOT_ENABLE, LOW);
@@ -15,18 +16,13 @@ String read_rfid()
     String rfid = "";
     if(rfid_serial.available() == RFID_ID_LENGTH)
     {
-        //get rid of first char
+        //get rid of first header char
         rfid_serial.read();
-        while(rfid_serial.available())
-        {
-            char c = rfid_serial.read();
-            rfid.concat(c);
-        }
-        //trim newline
+        rfid = rfid_serial.readString();
         rfid.trim();
         Serial.print("got RFID: "); Serial.println(rfid);
     }
-    if(rfid_serial.available() > RFID_ID_LENGTH)
+    else if(rfid_serial.available() > RFID_ID_LENGTH)
         rfid_serial.flush();
     return rfid;
 }
@@ -42,7 +38,7 @@ bool auth_user(String rfid)
 {
     Process p;
     String command = "/root/spreadsheet/fetch.py --check-user --rfid " + rfid;
-    Serial.println(command);
+    Serial.print(command);
     p.runShellCommand(command);
 
     if(p.exitValue() != 0)
@@ -52,16 +48,10 @@ bool auth_user(String rfid)
 
     if(p.available())
     {
-        while(p.available())
-        {
-            char c = p.read();
-            if(c == ',')
-                break;
-            user.name.concat(c);
-        }
+        user.name = p.readStringUntil(',');
         Serial.print("got name: "); Serial.println(user.name);
         int i = 0;
-        while(p.available())
+        while(p.available() > 1) //more than one means we skip the \n
         {
             user.tools[i] = p.parseInt();
             Serial.print("tool:"); Serial.println(user.tools[i]);
@@ -73,6 +63,7 @@ bool auth_user(String rfid)
 
 int get_tools()
 {
+    Serial.println("fetching list of tools");
     Process p;
     String command = "/root/spreadsheet/fetch.py --list-tools";
     Serial.println(command);
@@ -86,22 +77,17 @@ int get_tools()
     {
         while(p.available())
         {
-            char c = p.read();
-            if(c == ',')
-            {
-                //read the tool's id and whether it's working at the moment
-                tools[num_tools].id = p.parseInt();
-                tools[num_tools].operational = p.parseInt();
-            }
-            else if(c == '\n')
-            {
-                Serial.print("tool:"); Serial.println(tools[num_tools].name);
-                Serial.print("id:"); Serial.println(tools[num_tools].id);
-                num_tools++;
-            }
-            else
-                //tool's name
-                tools[num_tools].name.concat(c);
+            //name
+            tools[num_tools].name = p.readStringUntil(',');
+            //read the tool's id and whether it's working at the moment
+            tools[num_tools].id = p.parseInt();
+            tools[num_tools].operational = p.parseInt();
+            //chomp the newline
+            p.read();
+
+            Serial.print("tool id: "); Serial.print(tools[num_tools].id);
+            Serial.print(" name:"); Serial.println(tools[num_tools].name);
+            num_tools++;
         }
     }
     return num_tools;
@@ -129,6 +115,6 @@ void log_tool_time()
     p.addParameter("--time");
     p.addParameter(lcd_format_time(tools[page_num].time));
     p.run();
-    //async so we don't have to wait - didn't work
+    //async so we don't have to wait - didn't work because p goes out of scope
 //    p.runAsynchronously();
 }
