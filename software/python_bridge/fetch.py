@@ -85,7 +85,6 @@ def fetch_tools():
     all_tools = []
     for entry in client.get_list_feed(user_spread_key, worksheet_id).entry:
         all_tools.append(entry.to_dict())
-
     log.info("fetched %d tools" % len(all_tools))
     with open(get_tools_file(), 'w') as fh:
         json.dump(all_tools, fh)
@@ -103,17 +102,22 @@ def fetch_users():
     with open(get_users_file(), 'w') as fh:
         json.dump(all_users, fh)
 
+def get_tools():
+    with open(get_tools_file()) as fh:
+        all_tools = json.load(fh)
+        return all_tools
+
 def get_user(rfid):
     with open(get_users_file()) as fh:
         all_users = json.load(fh)
 
-    for user, id in zip(all_users, range(len(all_users))):
+    for user in all_users:
         if user['rfid'] == rfid:
             log.debug("found user %s for rfid [%s]" % (user['name'], rfid))
-            return id, user['name']
+            return user['name'], user['tools']
 
     # otherwise log unknown user and quit
-    log_unknown_rfid(args.rfid, client)
+    log_unknown_rfid(args.rfid)
     log.error("unknown rfid")
     exit(1)
 
@@ -152,10 +156,10 @@ if __name__ == '__main__':
         help="do oauth2 token stuff")
     parser.add_argument('--check-user', action='store_const', const=True,
         help="check and rfid")
-    parser.add_argument('--fetch-tools', action='store_const', const=True,
-        help="fetch tools")
-    parser.add_argument('--fetch-users', action='store_const', const=True,
-        help="fetch users")
+    parser.add_argument('--update-cache', action='store_const', const=True,
+        help="refresh the user and tool cache")
+    parser.add_argument('--list-tools', action='store_const', const=True,
+        help="list tools for arduino to read")
     parser.add_argument('--rfid', action='store',
         help="rfid")
     parser.add_argument('--time', action='store',
@@ -176,22 +180,25 @@ if __name__ == '__main__':
         if args.auth_token:
             get_tokens()
 
-        elif args.fetch_users:
+        elif args.update_cache:
             fetch_users()
-
-        elif args.fetch_tools:
             fetch_tools()
 
+        elif args.list_tools:
+            for tool in get_tools():
+                print("%s,%s,%s" % (tool['name'], tool['id'], tool['operational']))
+                
         elif args.log_tool:
             if not (args.time and args.rfid):
                 parser.error("--log-tool requires --time and --rfid")
-            id, name = get_user(args.rfid)
+            name, tools = get_user(args.rfid)
             log_time(args.log_tool, args.time, name, args.rfid)
 
         elif args.check_user:
-            id, name = get_user(args.rfid)
-            print("%d %s" % (id, name))
+            name, tools = get_user(args.rfid)
+            print("%s,%s" % (name, tools))
 
     except Exception as e:
+        print e
         log.exception(e)
         exit(1)
