@@ -5,13 +5,19 @@ http://gspread.readthedocs.org/en/latest/oauth2.html
 
 for info in getting oauth2 setup. 
 When you've got the json file downloaded, move it to secrets.json
+
+gdata docs re spreadsheets:
+https://gdata-python-client.googlecode.com/hg/pydocs/gdata.spreadsheets.client.html#SpreadsheetsClient-add_record
 '''
 import json
 import argparse
-
+from datetime import datetime
 import gdata.spreadsheets.client
 import gdata.gauth
 import os
+
+#put this in a config
+user_spread_key = '1bunn7jx2sxtLwCtbpWVo3ih4prpLRCs_5TdyOyejCfM'
 
 def get_secrets_file():
     return os.path.dirname(os.path.realpath(__file__)) + "/secrets.json"
@@ -43,10 +49,8 @@ def get_tokens():
         json.dump(secrets, fh)
         print("wrote refresh and access token to secrets.json")
 
-def get_sheet(sheet_key):
-
+def get_client():
     secrets = load_secrets()
-
     token = gdata.gauth.OAuth2Token(
         client_id=secrets["installed"]['client_id'],
         client_secret=secrets["installed"]['client_secret'],
@@ -60,9 +64,18 @@ def get_sheet(sheet_key):
    
     return spr_client
 
+def worksheet_dict(feed):
+    d = {}
+    for i, entry in enumerate(feed.entry):
+        d[entry.title.text] = entry.id.text.split('/')[-1] 
+    return d
+
 def fetch_users(spr_client):
+    sheets = worksheet_dict(spr_client.get_worksheets(user_spread_key))
+    worksheet_id = sheets['users']
+
     all_users = []
-    for entry in spr_client.get_list_feed(sheet_key, 'od6').entry:
+    for entry in spr_client.get_list_feed(user_spread_key, worksheet_id).entry:
         all_users.append(entry.to_dict())
     print("fetched %d users" % len(all_users))
     with open(get_users_file(), 'w') as fh:
@@ -75,7 +88,14 @@ def get_user(rfid):
     for user, id in zip(all_users, range(len(all_users))):
         if user['rfid'] == rfid:
             return id, user['name']
-    exit(-1)
+
+def log_unknown_rfid(rfid, spr_client):
+    sheets = worksheet_dict(spr_client.get_worksheets(user_spread_key))
+    worksheet_id = sheets['unknown']
+    entry = gdata.spreadsheets.data.ListEntry()
+    entry.set_value('rfid', rfid)
+    entry.set_value('date', str(datetime.now()))
+    spr_client.add_list_entry(entry, user_spread_key, worksheet_id)
 
 if __name__ == '__main__':
 
@@ -88,12 +108,16 @@ if __name__ == '__main__':
         help="check rfid")
     args = parser.parse_args()
 
+    client = get_client()
+
     if args.auth_token:
         get_tokens()
     if args.fetch_users:
-        sheet_key = '1bunn7jx2sxtLwCtbpWVo3ih4prpLRCs_5TdyOyejCfM'
-        sheet = get_sheet(sheet_key)
-        fetch_users(sheet)
+        fetch_users(client)
     if args.check_rfid:
-        id, name = get_user(args.check_rfid)
-        print("%d %s" % (id, name))
+        try:
+            id, name = get_user(args.check_rfid)
+            print("%d %s" % (id, name))
+        except TypeError:
+            log_unknown_rfid(args.check_rfid, client)
+            exit(-1)
