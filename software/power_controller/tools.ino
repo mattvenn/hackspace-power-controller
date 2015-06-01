@@ -1,19 +1,5 @@
 
 
-// placeholder, will be fetched from google spreadsheet!
-void setup_users()
-{
-    //0
-    users[0].user_name = "matt";
-    users[0].rfid = "04184A4FC6";
-
-    //1
-    users[1].user_name = "nic";
-    users[1].rfid = "04184A38D8";
-
-}
-
-
     
 // placeholder, will be fetched from google spreadsheet!
 void setup_tools()

@@ -5,6 +5,16 @@ void setup_lcd()
 {
     // set up the LCD's number of columns and rows: 
     lcd.begin(LCD_WIDTH, 2);
+    lcd_boot();
+}
+
+void lcd_boot()
+{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("power controller");
+    lcd.setCursor(0, 1);
+    lcd.print("waiting for Yun...");
 }
 
 void lcd_start()
@@ -30,7 +40,7 @@ void lcd_valid_user()
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("user: ");
-    lcd.print(users[user_id].user_name);
+    lcd.print(user_name);
     lcd.setCursor(0, 1);
     lcd.print("scroll for tools");
     digitalWrite(BUT_LED, LOW);
@@ -41,6 +51,14 @@ void lcd_invalid_user()
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("unrecognised RFID");
+    digitalWrite(BUT_LED, LOW);
+}
+
+void lcd_check_rfid()
+{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("checking RFID");
     digitalWrite(BUT_LED, LOW);
 }
 
@@ -72,9 +90,8 @@ void lcd_tool_in_use()
 {
     lcd_tool_id();
     lcd.print("inducted");
-    int current_user = tools[tool_id].current_user;
     lcd.setCursor(0, 1);
-    lcd.print(users[current_user].user_name);
+    lcd.print(tools[tool_id].current_user);
     lcd.setCursor(LCD_WIDTH - 8, 1);
     lcd.print(lcd_format_time(tools[tool_id].time));
     digitalWrite(BUT_LED, LOW);

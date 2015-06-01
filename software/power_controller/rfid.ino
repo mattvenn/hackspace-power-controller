@@ -14,12 +14,10 @@ void setup_rfid()
 #define RFID_ID_LENGTH 10 + 2
 String check_rfid()
 {
-    Serial.println("check rfid");
     String id = "";
     int i = 0;
     if(mySerial.available() == RFID_ID_LENGTH)
     {
-        Serial.println("got an ID");
         while(i++ < RFID_ID_LENGTH)
         {
             char c = mySerial.read();
@@ -27,7 +25,7 @@ String check_rfid()
                 continue;
             id += c;
         }
-        Serial.println(id);
+        Serial.print("got RFID: "); Serial.println(id);
     }
     //flush if somehow there's too much data eg multiple reads or corrupted data
     else if(mySerial.available() > RFID_ID_LENGTH)
@@ -37,11 +35,10 @@ String check_rfid()
     return id;
 }
 
-/*
 int get_user_id(String rfid)
 {
     Process p;
-    String command = "/root/spreadsheet/fetch.py --check-rfid " + rfid;
+    String command = "/root/spreadsheet/fetch.py --check-user --rfid " + rfid;
     Serial.println(command);
     p.runShellCommand(command);
 
@@ -53,7 +50,11 @@ int get_user_id(String rfid)
 
     if(p.available())
         id = p.parseInt();
+    
+    //strip space
+    p.read();
 
+    //read the name
     while(p.available()) 
     {
         char c = p.read();
@@ -62,17 +63,8 @@ int get_user_id(String rfid)
     }
     Serial.println(name);
     Serial.println(id);
+    user_name = name;
     return id;
-}
-*/
-int get_user_id(String rfid)
-{
-    for(int i = 0; i < num_users; i ++)
-    {
-        if(users[i].rfid == rfid)
-            return i;
-    }
-    return -1;
 }
 
 bool is_inducted(int user_id, int tool_id)
@@ -83,4 +75,18 @@ bool is_inducted(int user_id, int tool_id)
             return true;
     }
     return false;
+}
+
+void log_tool_time()
+{
+    Serial.println("logging tool off time");
+    Process p;
+    p.begin("/root/spreadsheet/fetch.py");
+    p.addParameter("--log-tool");
+    p.addParameter(tools[tool_id].tool_name);
+    p.addParameter("--rfid");
+    p.addParameter(rfid);
+    p.addParameter("--time");
+    p.addParameter(lcd_format_time(tools[tool_id].time));
+    p.run();
 }

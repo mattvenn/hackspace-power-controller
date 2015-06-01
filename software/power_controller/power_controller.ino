@@ -38,7 +38,8 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 #define S_USER_START 0
 #define S_USER_IDLE 1
-#define S_USER_CHECK_RFID 2
+#define S_USER_READ_RFID 2
+#define S_USER_CHECK_RFID 12
 #define S_USER_VALID 3
 #define S_USER_WAIT_CONTROL 4
 #define S_USER_UNKNOWN 5
@@ -55,7 +56,7 @@ struct tool
 {
     String tool_name;
     bool running = false;
-    int current_user = 0;
+    String current_user;
     bool operational = true;
     int time = 0;
     int users[num_users];
@@ -65,15 +66,17 @@ struct user
 {
     String user_name;
     String rfid;
-};
+    int id;
+} current_user;
 
 struct tool tools[num_tools];
-struct user users[num_users];
 
 int enc_clicks = 0; //encoder enc_clicks
 bool button_pressed = false; //button is pressed
 int tool_id = 0; //what page is showing on lcd
 int user_id = -1;
+String user_name;
+String rfid;
 double session_time;
 
 void setup()
@@ -92,17 +95,8 @@ void setup()
 
     //fetch users & tools
     setup_tools();
-    setup_users();
 
-    lcd_start();
-
-    //Bridge.begin();	// Initialize the Bridge
-
-    // Wait until a Serial Monitor is connected.
-    //while (!Serial);
-
-    //get_user_id("04184A4FC6"); //correct
-    //Serial.println(get_user_id("04184A4FC5"));
+    Bridge.begin();	// Initialize the Bridge
 }
 unsigned int msCounts = 0;
 
@@ -117,33 +111,13 @@ void loop()
             break;
         case S_USER_IDLE:
             if(msCounts >= 100)
-                fsm_state_user = S_USER_CHECK_RFID;
+                fsm_state_user = S_USER_READ_RFID;
             break;
-        case S_USER_CHECK_RFID:
-        //check for rfid
-        String rfid = check_rfid();
-        if(rfid != "")
-        {
-            String rfid = check_rfid();
+        case S_USER_READ_RFID:
+            rfid = check_rfid();
             if(rfid != "")
             {
-                user_id = get_user_id(rfid);
-                //valid user id?
-                if(user_id >=0)
-                {
-                    Serial.println("valid id");
-                    msCounts = 0;
-                    tool_id = 0;
-                    enc_clicks = 0;
-                    fsm_state_user = S_USER_VALID;
-                    lcd_valid_user();
-                }
-                else
-                {
-                    fsm_state_user = S_USER_UNKNOWN;
-                    msCounts = 0;
-                    lcd_invalid_user();
-                }
+                fsm_state_user = S_USER_CHECK_RFID; 
             }
             else
             {
@@ -151,8 +125,27 @@ void loop()
                 fsm_state_user = S_USER_IDLE;
             } 
             break;
-        }
-
+        case S_USER_CHECK_RFID:
+            lcd_check_rfid();
+            //check python command via bridge
+            user_id = get_user_id(rfid);
+            //valid user id?
+            if(user_id >=0)
+            {
+                Serial.println("valid id");
+                msCounts = 0;
+                tool_id = 0;
+                enc_clicks = 0;
+                fsm_state_user = S_USER_VALID;
+                lcd_valid_user();
+            }
+            else
+            {
+                fsm_state_user = S_USER_UNKNOWN;
+                msCounts = 0;
+                lcd_invalid_user();
+            }
+            break;
         case S_USER_VALID:
             if(msCounts >= LCD_TIMEOUT)
                 fsm_state_user = S_USER_UPDATE_LCD;
@@ -198,7 +191,7 @@ void loop()
                     lcd_tool_start();
                 }
                 //it's running and we're the user
-                else if(tools[tool_id].current_user == user_id)
+                else if(tools[tool_id].current_user == user_name)
                 {
                     if(button_pressed)
                     {
@@ -283,9 +276,9 @@ bool check_controls()
 void stop_tool()
 {
     tools[tool_id].running = false;
-    //log time & turn off
+    //turn off & log time
     radio_turn_off(tool_id);
-    Serial.println("logging tool off time");
+    log_tool_time();
 }
 
 void start_tool()
@@ -293,7 +286,6 @@ void start_tool()
     //log time & turn on
     tools[tool_id].running = true;
     tools[tool_id].time = millis()/1000;
-    tools[tool_id].current_user = user_id;
-    Serial.println("logging tool on time");
+    tools[tool_id].current_user = user_name;
     radio_turn_on(tool_id);
 }
