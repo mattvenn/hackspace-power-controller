@@ -1,6 +1,6 @@
 #include <Rotary.h>
 
-Rotary r = Rotary(ENCA_a, ENCA_b);
+Rotary r = Rotary(ENC_A, ENC_B);
 
 void check_encoder()
 {

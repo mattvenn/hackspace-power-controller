@@ -1,11 +1,28 @@
 //pin defs
-#define ENCA_a 6
-#define ENCA_b 7
-#define RFID_RX 4
-#define RFID_TX RFID_RX //same as each other as we never send
-#define BUT 2
+#define ENC_A 2
+#define ENC_B 3
+#define BUT 4
 #define BUT_LED 5
-#define RADIO_TX 3
+
+#define RFID_NOT_ENABLE 6
+#define HANDSHAKE 7 //do not use
+#define RFID_RX 8
+#define RFID_TX RFID_RX //same as each other as we never send
+
+#define LCD_D6 9
+#define LCD_D7 10
+#define LCD_D4 11
+#define LCD_D5 12
+#define LCD_EN 13
+#define LCD_RS A0
+
+#define GPIO1 A3 //unused
+#define GPIO2 A2
+#define GPIO3 A1
+
+#define RADIO_TX A4
+#define BUZZ A5
+
 #include <LiquidCrystal.h>
 #include <Process.h>
 
@@ -13,9 +30,8 @@
 #define LCD_TIMEOUT 1000 //time we spend before changing screen
 #define SESSION_TIMEOUT 5000 //time before session times out
 
-// initialize the library with the numbers of the interface pins
-//rs enable d4,5,6,7
-LiquidCrystal lcd(8,9,10,11,12,13);
+//LCD
+LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 #define num_tools 4
 #define num_users 2
@@ -80,13 +96,13 @@ void setup()
 
     lcd_start();
 
-    Bridge.begin();	// Initialize the Bridge
+    //Bridge.begin();	// Initialize the Bridge
 
     // Wait until a Serial Monitor is connected.
-    while (!Serial);
+    //while (!Serial);
 
     //get_user_id("04184A4FC6"); //correct
-    Serial.println(get_user_id("04184A4FC5"));
+    //Serial.println(get_user_id("04184A4FC5"));
 }
 unsigned int msCounts = 0;
 
@@ -104,6 +120,9 @@ void loop()
                 fsm_state_user = S_USER_CHECK_RFID;
             break;
         case S_USER_CHECK_RFID:
+        //check for rfid
+        String rfid = check_rfid();
+        if(rfid != "")
         {
             String rfid = check_rfid();
             if(rfid != "")

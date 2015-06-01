@@ -7,33 +7,37 @@ SoftwareSerial mySerial(RFID_RX, RFID_TX); // RX, TX
 void setup_rfid()
 {
   mySerial.begin(2400);
+  pinMode(RFID_NOT_ENABLE, OUTPUT);
+  //turn on rfid
+  digitalWrite(RFID_NOT_ENABLE, LOW);
 }
 #define RFID_ID_LENGTH 10 + 2
 String check_rfid()
 {
-  String id = "";
-  int i = 0;
-  if(mySerial.available() == RFID_ID_LENGTH)
-  {
-    Serial.println("got an ID");
-    while(i++ < RFID_ID_LENGTH)
+    Serial.println("check rfid");
+    String id = "";
+    int i = 0;
+    if(mySerial.available() == RFID_ID_LENGTH)
     {
-        char c = mySerial.read();
-        if(i == 1 || i == RFID_ID_LENGTH)
-            continue;
-        id += c;
+        Serial.println("got an ID");
+        while(i++ < RFID_ID_LENGTH)
+        {
+            char c = mySerial.read();
+            if(i == 1 || i == RFID_ID_LENGTH)
+                continue;
+            id += c;
+        }
+        Serial.println(id);
     }
-    Serial.println(id);
-  }
-  //flush if somehow there's too much data eg multiple reads or corrupted data
-  else if(mySerial.available() > RFID_ID_LENGTH)
-  {
-    mySerial.flush();
-  }
-  return id;
+    //flush if somehow there's too much data eg multiple reads or corrupted data
+    else if(mySerial.available() > RFID_ID_LENGTH)
+    {
+        mySerial.flush();
+    }
+    return id;
 }
 
-
+/*
 int get_user_id(String rfid)
 {
     Process p;
@@ -60,7 +64,7 @@ int get_user_id(String rfid)
     Serial.println(id);
     return id;
 }
-/*
+*/
 int get_user_id(String rfid)
 {
     for(int i = 0; i < num_users; i ++)
@@ -70,7 +74,6 @@ int get_user_id(String rfid)
     }
     return -1;
 }
-*/
 
 bool is_inducted(int user_id, int tool_id)
 {
