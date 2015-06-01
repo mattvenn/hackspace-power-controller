@@ -9,7 +9,7 @@ void setup_users()
 
     //1
     users[1].user_name = "nic";
-    users[1].rfid = "04184A4147";
+    users[1].rfid = "04184A38D8";
 
 }
 
