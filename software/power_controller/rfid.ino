@@ -1,41 +1,44 @@
-// Not all pins on the Leonardo support change interrupts,
-// so only the following can be used for RX:
-// 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(RFID_RX, RFID_TX); // RX, TX
+#define RFID_ID_LENGTH 10 + 2
+SoftwareSerial rfid_serial(RFID_RX, RFID_TX); // RX, TX
 
 void setup_rfid()
 {
-  mySerial.begin(2400);
-  pinMode(RFID_NOT_ENABLE, OUTPUT);
-  //turn on rfid
-  digitalWrite(RFID_NOT_ENABLE, LOW);
-}
-#define RFID_ID_LENGTH 10 + 2
-String check_rfid()
-{
-    String id = "";
-    int i = 0;
-    if(mySerial.available() == RFID_ID_LENGTH)
-    {
-        while(i++ < RFID_ID_LENGTH)
-        {
-            char c = mySerial.read();
-            if(i == 1 || i == RFID_ID_LENGTH)
-                continue;
-            id += c;
-        }
-        Serial.print("got RFID: "); Serial.println(id);
-    }
-    //flush if somehow there's too much data eg multiple reads or corrupted data
-    else if(mySerial.available() > RFID_ID_LENGTH)
-    {
-        mySerial.flush();
-    }
-    return id;
+    rfid_serial.begin(2400);
+    //turn on rfid
+    pinMode(RFID_NOT_ENABLE, OUTPUT);
+    digitalWrite(RFID_NOT_ENABLE, LOW);
 }
 
-int get_user_id(String rfid)
+String read_rfid()
+{
+    String rfid = "";
+    if(rfid_serial.available() == RFID_ID_LENGTH)
+    {
+        //get rid of first char
+        rfid_serial.read();
+        while(rfid_serial.available())
+        {
+            char c = rfid_serial.read();
+            rfid.concat(c);
+        }
+        //trim newline
+        rfid.trim();
+        Serial.print("got RFID: "); Serial.println(rfid);
+    }
+    if(rfid_serial.available() > RFID_ID_LENGTH)
+        rfid_serial.flush();
+    return rfid;
+}
+
+void timeout_user()
+{
+    user.name = "";
+    user.rfid = "";
+    for(int i = 0; i < MAX_TOOLS; i++)
+        user.tools[i] = 0;
+}
+bool auth_user(String rfid)
 {
     Process p;
     String command = "/root/spreadsheet/fetch.py --check-user --rfid " + rfid;
@@ -43,35 +46,72 @@ int get_user_id(String rfid)
     p.runShellCommand(command);
 
     if(p.exitValue() != 0)
-        return -1;
+        return false;
 
-    int id = 0;
-    String name = "";
+    user.rfid = rfid;
 
     if(p.available())
-        id = p.parseInt();
-    
-    //strip space
-    p.read();
-
-    //read the name
-    while(p.available()) 
     {
-        char c = p.read();
-        if(c!='\n')
-            name += c;
+        while(p.available())
+        {
+            char c = p.read();
+            if(c == ',')
+                break;
+            user.name.concat(c);
+        }
+        Serial.print("got name: "); Serial.println(user.name);
+        int i = 0;
+        while(p.available())
+        {
+            user.tools[i] = p.parseInt();
+            Serial.print("tool:"); Serial.println(user.tools[i]);
+            i++;
+        }
     }
-    Serial.println(name);
-    Serial.println(id);
-    user_name = name;
-    return id;
+    return true;
 }
 
-bool is_inducted(int user_id, int tool_id)
+int get_tools()
 {
-    for(int i = 0; i < num_users; i ++)
+    Process p;
+    String command = "/root/spreadsheet/fetch.py --list-tools";
+    Serial.println(command);
+    p.runShellCommand(command);
+
+    if(p.exitValue() != 0)
+        Serial.print("error fetching tools");
+
+    int num_tools = 0;
+    if(p.available())
     {
-        if(tools[tool_id].users[i] == user_id)
+        while(p.available())
+        {
+            char c = p.read();
+            if(c == ',')
+            {
+                //read the tool's id and whether it's working at the moment
+                tools[num_tools].id = p.parseInt();
+                tools[num_tools].operational = p.parseInt();
+            }
+            else if(c == '\n')
+            {
+                Serial.print("tool:"); Serial.println(tools[num_tools].name);
+                Serial.print("id:"); Serial.println(tools[num_tools].id);
+                num_tools++;
+            }
+            else
+                //tool's name
+                tools[num_tools].name.concat(c);
+        }
+    }
+    return num_tools;
+}
+
+bool is_inducted(int tool_id)
+{
+    for(int i = 0; i < MAX_TOOLS; i ++)
+    {
+        if(user.tools[i] == tool_id)
             return true;
     }
     return false;
@@ -83,10 +123,12 @@ void log_tool_time()
     Process p;
     p.begin("/root/spreadsheet/fetch.py");
     p.addParameter("--log-tool");
-    p.addParameter(tools[tool_id].tool_name);
+    p.addParameter(tools[page_num].name);
     p.addParameter("--rfid");
-    p.addParameter(rfid);
+    p.addParameter(user.rfid);
     p.addParameter("--time");
-    p.addParameter(lcd_format_time(tools[tool_id].time));
+    p.addParameter(lcd_format_time(tools[page_num].time));
     p.run();
+    //async so we don't have to wait - didn't work
+//    p.runAsynchronously();
 }

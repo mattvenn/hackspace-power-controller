@@ -1,4 +1,3 @@
-
 #define LCD_WIDTH 20
 
 void setup_lcd()
@@ -40,7 +39,7 @@ void lcd_valid_user()
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("user: ");
-    lcd.print(user_name);
+    lcd.print(user.name);
     lcd.setCursor(0, 1);
     lcd.print("scroll for tools");
     digitalWrite(BUT_LED, LOW);
@@ -91,9 +90,9 @@ void lcd_tool_in_use()
     lcd_tool_id();
     lcd.print("inducted");
     lcd.setCursor(0, 1);
-    lcd.print(tools[tool_id].current_user);
+    lcd.print(tools[page_num].current_user);
     lcd.setCursor(LCD_WIDTH - 8, 1);
-    lcd.print(lcd_format_time(tools[tool_id].time));
+    lcd.print(lcd_format_time(tools[page_num].time));
     digitalWrite(BUT_LED, LOW);
 }
 
@@ -101,9 +100,9 @@ void lcd_tool_id()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print(tool_id);
+    lcd.print(page_num + 1);
     lcd.print(": ");
-    lcd.print(tools[tool_id].tool_name);
+    lcd.print(tools[page_num].name);
     lcd.setCursor(LCD_WIDTH - 8, 0);
 }
 

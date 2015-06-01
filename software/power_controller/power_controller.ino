@@ -1,11 +1,15 @@
 //pin defs
-#define ENC_A 2
-#define ENC_B 3
+#define ENC_A 3
+#define ENC_B 2
 #define BUT 4
 #define BUT_LED 5
 
 #define RFID_NOT_ENABLE 6
 #define HANDSHAKE 7 //do not use
+
+// Not all pins on the Leonardo support change interrupts,
+// so only the following can be used for RX:
+// 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
 #define RFID_RX 8
 #define RFID_TX RFID_RX //same as each other as we never send
 
@@ -29,12 +33,11 @@
 //UI defs
 #define LCD_TIMEOUT 1000 //time we spend before changing screen
 #define SESSION_TIMEOUT 5000 //time before session times out
+#define MAX_TOOLS 10
 
 //LCD
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
-#define num_tools 4
-#define num_users 2
 
 #define S_USER_START 0
 #define S_USER_IDLE 1
@@ -54,35 +57,36 @@ int fsm_state_user = S_USER_START;
 
 struct tool
 {
-    String tool_name;
+    String name;
     bool running = false;
-    String current_user;
+    String current_user = "";
     bool operational = true;
     int time = 0;
-    int users[num_users];
-};
+    int id = 0; //0 is an invalid id
+} tools[MAX_TOOLS];
 
+//authenticated user's info
 struct user
 {
-    String user_name;
-    String rfid;
-    int id;
-} current_user;
+    String name = "";
+    String rfid = "";
+    int tools[MAX_TOOLS];
+} user;
 
-struct tool tools[num_tools];
-
+//ui globals
 int enc_clicks = 0; //encoder enc_clicks
-bool button_pressed = false; //button is pressed
-int tool_id = 0; //what page is showing on lcd
-int user_id = -1;
-String user_name;
-String rfid;
-double session_time;
+bool button_pressed = false; //button's been pressed
+int page_num = 0; //what page is showing on lcd
+String rfid; //where rfid tags are read into
+int num_tools = 0;
+unsigned int msCounts = 0; //counter for states
 
 void setup()
 {
     Serial.begin(9600); 
     Serial.println("started");
+
+    //peripherals
     setup_lcd();
     setup_radio();
     setup_rfid();
@@ -93,12 +97,12 @@ void setup()
     pinMode(BUT_LED, OUTPUT);
     digitalWrite(BUT_LED, LOW);
 
-    //fetch users & tools
-    setup_tools();
+	//initialize the Bridge
+    Bridge.begin();
 
-    Bridge.begin();	// Initialize the Bridge
+    //fetch users & tools
+    num_tools = get_tools();
 }
-unsigned int msCounts = 0;
 
 void loop() 
 {
@@ -114,7 +118,7 @@ void loop()
                 fsm_state_user = S_USER_READ_RFID;
             break;
         case S_USER_READ_RFID:
-            rfid = check_rfid();
+            rfid = read_rfid();
             if(rfid != "")
             {
                 fsm_state_user = S_USER_CHECK_RFID; 
@@ -128,13 +132,11 @@ void loop()
         case S_USER_CHECK_RFID:
             lcd_check_rfid();
             //check python command via bridge
-            user_id = get_user_id(rfid);
-            //valid user id?
-            if(user_id >=0)
+            if(auth_user(rfid))
             {
                 Serial.println("valid id");
                 msCounts = 0;
-                tool_id = 0;
+                page_num = 0;
                 enc_clicks = 0;
                 fsm_state_user = S_USER_VALID;
                 lcd_valid_user();
@@ -163,6 +165,7 @@ void loop()
             if(msCounts >= SESSION_TIMEOUT)
             {
                 fsm_state_user = S_USER_TIMEOUT;
+                timeout_user();
                 msCounts = 0;
                 lcd_session_timeout();
             }
@@ -170,17 +173,17 @@ void loop()
 
         case S_USER_UPDATE_LCD:
                 //tool out of use
-                if(tools[tool_id].operational == false)
+                if(tools[page_num].operational == false)
                 {
                     lcd_tool_offline();
                 }
                 //is inducted?
-                else if(! is_inducted(user_id, tool_id))
+                else if(! is_inducted(tools[page_num].id))
                 {
                     lcd_tool_noinduct();
                 }
                 //it's not running
-                else if(not tools[tool_id].running)
+                else if(not tools[page_num].running)
                 {
                     if(button_pressed)
                     {
@@ -191,7 +194,7 @@ void loop()
                     lcd_tool_start();
                 }
                 //it's running and we're the user
-                else if(tools[tool_id].current_user == user_name)
+                else if(tools[page_num].current_user == user.name)
                 {
                     if(button_pressed)
                     {
@@ -232,7 +235,7 @@ void loop()
         case S_USER_TIMEOUT:
             if(msCounts >= LCD_TIMEOUT)
                  fsm_state_user = S_USER_START;
-             break;
+            break;
             
     }
     //Time keeping:
@@ -254,11 +257,12 @@ bool check_controls()
             enc_clicks = num_tools - 1;
   
         //different to last time? update display
-        if(tool_id != enc_clicks)
+        if(page_num != enc_clicks)
         {
-            tool_id = enc_clicks;
-            Serial.print("showing tool id: ");
-            Serial.println(enc_clicks);
+            page_num = enc_clicks;
+            //set button_pressed to false so don't accidentally press 
+            //when a page changes
+            button_pressed = false;
             return true;
         }
         if(digitalRead(BUT) == LOW)
@@ -275,17 +279,17 @@ bool check_controls()
 
 void stop_tool()
 {
-    tools[tool_id].running = false;
+    tools[page_num].running = false;
     //turn off & log time
-    radio_turn_off(tool_id);
+    radio_turn_off(page_num);
     log_tool_time();
 }
 
 void start_tool()
 {
     //log time & turn on
-    tools[tool_id].running = true;
-    tools[tool_id].time = millis()/1000;
-    tools[tool_id].current_user = user_name;
-    radio_turn_on(tool_id);
+    tools[page_num].running = true;
+    tools[page_num].time = millis()/1000;
+    tools[page_num].current_user = user.name;
+    radio_turn_on(page_num);
 }
