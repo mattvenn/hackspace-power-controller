@@ -2,7 +2,26 @@
 
 * decide about power supply - whatever is best for hackspace installation
 * change software diagram to state diagram
-* merge fsm branch
+* fetch.py handle 500 errors from google
+* fetch.py timeout on network
+* run logging async - doesn't work, needs investigating - http://forum.arduino.cc/index.php?topic=286841.0
+* how to do periodic sync of tools on arduino? wait till all off and timeout?
+* crontab user tool sync
+* timezone yun
+* license
+
+# 2015-06-01
+
+Nice day of tidying things up and testing. Decided to put all the config data in
+one spreadsheet - tool owners/responsible people will have to trust each other.
+
+Remember to doc some spreadsheet gotchas:
+
+* tool ids have to be 1 indexed, as 0 is invalid (software bug with parseInt returning 0 for no parse)
+* max tools is 10 (firmware)
+
+Wanted to do async running of shell command but it doesn't seem to work. Not
+investigating further for now.
 
 # 2015-05-31
 
