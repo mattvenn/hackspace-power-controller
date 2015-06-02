@@ -15,7 +15,6 @@ void setup_rfid()
 String read_rfid()
 {
     String rfid = "";
-    Serial.println(F("checking rfid"));
     if(rfid_serial.available() == RFID_ID_LENGTH)
     {
         while(rfid_serial.available())
