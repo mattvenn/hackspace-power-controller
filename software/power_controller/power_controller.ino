@@ -32,7 +32,7 @@
 
 //UI defs
 #define LCD_TIMEOUT 1000 //time we spend before changing screen
-#define SESSION_TIMEOUT 5000 //time before session times out
+#define SESSION_TIMEOUT 2000 //time before session times out
 #define MAX_TOOLS 10
 
 //LCD
@@ -84,7 +84,7 @@ unsigned int msCounts = 0; //counter for states
 void setup()
 {
     Serial.begin(9600); 
-    Serial.println("started");
+    Serial.println(F("started"));
 
     //peripherals
     setup_lcd();
@@ -122,6 +122,7 @@ void loop()
             if(rfid != "")
             {
                 fsm_state_user = S_USER_CHECK_RFID; 
+                Serial.println(free_memory());
             }
             else
             {
@@ -134,7 +135,7 @@ void loop()
             //check python command via bridge
             if(auth_user(rfid))
             {
-                Serial.println("valid id");
+                Serial.println(F("valid id"));
                 msCounts = 0;
                 page_num = 0;
                 enc_clicks = 0;
@@ -162,6 +163,7 @@ void loop()
             if(check_controls())
                 fsm_state_user = S_USER_UPDATE_LCD;
             //if user doesn't do anything for long enough, time out 
+
             if(msCounts >= SESSION_TIMEOUT)
             {
                 fsm_state_user = S_USER_TIMEOUT;
@@ -281,7 +283,7 @@ void stop_tool()
 {
     tools[page_num].running = false;
     //turn off & log time
-    radio_turn_off(page_num);
+    radio_turn_off(tools[page_num].id);
     log_tool_time();
 }
 
@@ -291,5 +293,5 @@ void start_tool()
     tools[page_num].running = true;
     tools[page_num].time = millis()/1000;
     tools[page_num].current_user = user.name;
-    radio_turn_on(page_num);
+    radio_turn_on(tools[page_num].id);
 }
