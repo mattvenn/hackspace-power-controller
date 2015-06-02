@@ -79,6 +79,7 @@ def worksheet_dict(feed):
     return d
 
 def fetch_tools():
+    log.debug("fetching tools")
     client = get_client()
     sheets = worksheet_dict(client.get_worksheets(user_spread_key))
     worksheet_id = sheets['tools']
@@ -90,6 +91,7 @@ def fetch_tools():
         json.dump(all_tools, fh)
 
 def fetch_users():
+    log.debug("fetching users")
     client = get_client()
     sheets = worksheet_dict(client.get_worksheets(user_spread_key))
     worksheet_id = sheets['users']
@@ -122,16 +124,17 @@ def get_user(rfid):
     exit(1)
 
 def log_unknown_rfid(rfid):
+    log.debug("logging unknown rfid [%s]" % rfid)
     client = get_client()
     sheets = worksheet_dict(client.get_worksheets(user_spread_key))
     worksheet_id = sheets['unknown']
     entry = gdata.spreadsheets.data.ListEntry()
     entry.set_value('rfid', rfid)
     entry.set_value('date', str(datetime.now()))
-    log.debug("logging unknown rfid [%s]" % rfid)
     client.add_list_entry(entry, user_spread_key, worksheet_id)
 
 def log_time(tool, time, name, rfid):
+    log.debug("logging %s on %s for user %s [%s]" % (time, tool, name, rfid))
     client = get_client()
     sheets = worksheet_dict(client.get_worksheets(user_spread_key))
     try:
@@ -145,7 +148,6 @@ def log_time(tool, time, name, rfid):
     entry.set_value('name', name)
     entry.set_value('date', str(datetime.now()))
     entry.set_value('time', time)
-    log.debug("logging %s on %s for user %s [%s]" % (time, tool, name, rfid))
     client.add_list_entry(entry, user_spread_key, worksheet_id)
 
 
@@ -199,6 +201,9 @@ if __name__ == '__main__':
             print("%s,%s" % (name, tools))
 
     except Exception as e:
-        print e
-        log.exception(e)
-        exit(1)
+    	if 'Name or service not known' in str(e):
+            log.error("no internet connection")
+            exit(1)
+        else:
+            log.exception(e)
+            exit(1)

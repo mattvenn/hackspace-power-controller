@@ -2,6 +2,7 @@
 
 * decide about power supply - whatever is best for hackspace installation
 * change software diagram to state diagram
+<<<<<<< Updated upstream
 * fetch.py handle 500 errors from google
 * fetch.py timeout on network
 * run logging async - doesn't work, needs investigating - http://forum.arduino.cc/index.php?topic=286841.0
@@ -9,6 +10,12 @@
 * crontab user tool sync
 * timezone yun
 * license
+
+# 2015-06-02
+
+
+During tests started seeing issues with hanging while doing bridge stuff.
+My Yun version is quite old so trying a system update to fix this.
 
 # 2015-06-01
 
@@ -23,6 +30,10 @@ Remember to doc some spreadsheet gotchas:
 Wanted to do async running of shell command but it doesn't seem to work. Not
 investigating further for now.
 
+=======
+* merge fsm branch
+>>>>>>> Stashed changes
+
 # 2015-05-31
 
 Finally found a way of doing oauth2 with python without the google oauth2.client
@@ -31,6 +42,7 @@ for interacting with the google apis. It has built in oauth2 client and can be
 installed on the yun:
 
     wget https://pypi.python.org/packages/source/g/gdata/gdata-2.0.18.tar.gz#md5=13b6e6dd8f9e3e9a8e005e05a8329408 --no-check-certificate
+<<<<<<< Updated upstream
 
     tar -xzf gdata-2.0.18
     cd gdata-2.0.18
@@ -42,6 +54,19 @@ This package needs python expat installed:
 
 ## Oauth2 stuff:
 
+=======
+
+    tar -xzf gdata-2.0.18
+    cd gdata-2.0.18
+    python setup.py install
+
+This package needs python expat installed:
+
+    opkg install python-expat
+
+## Oauth2 stuff:
+
+>>>>>>> Stashed changes
 * setup a new client id of type 'service account' in https://console.developers.google.com
 * download json and save to secrets.json
 * run ./fetch.py --auth-token
