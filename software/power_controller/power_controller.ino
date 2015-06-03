@@ -32,7 +32,8 @@
 
 //UI defs
 #define LCD_TIMEOUT 1000 //time we spend before changing screen
-#define SESSION_TIMEOUT 2000 //time before session times out
+#define SESSION_TIMEOUT 5000 //time before session times out
+#define UNKNOWN_USER_TIMEOUT 4000 //time before we scan again after bad rfid
 #define MAX_TOOLS 10
 
 //LCD
@@ -155,7 +156,7 @@ void loop()
             break;
 
         case S_USER_UNKNOWN:
-            if(msCounts >= LCD_TIMEOUT)
+            if(msCounts >= UNKNOWN_USER_TIMEOUT)
                 fsm_state_user = S_USER_START;
             break;
 
