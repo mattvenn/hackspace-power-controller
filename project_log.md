@@ -3,7 +3,6 @@
 * change software diagram to state diagram
 * how to do periodic sync of tools on arduino? wait till all off and timeout?
 * crontab user tool sync
-* license
 * make post.py create a lock so only one can run at once to avoid too many
  processes ?
 

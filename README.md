@@ -64,7 +64,12 @@ to these figures allowed me to move things about to check fit.
 
 # Shortcomings
 
-* In many cases easy to bypass, but as used in a trusting environment, not seen as a big issue. A locking box could be made out of wood that would contain an extension lead end, the radio power switch and the end of the machine cable.
+In many cases easy to bypass, but as used in a trusting environment, not seen as a big issue. 
+
+To protect the plugs a locking box could be made out of wood that would contain an extension lead end, the radio power switch and the end of the machine cable.
+
+To protect the spreadsheet, it could be split into different sheets and then
+shared separately.
 
 # Licenses
 
