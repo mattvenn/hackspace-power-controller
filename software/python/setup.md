@@ -2,6 +2,8 @@
 
 [update to latest version](http://www.arduino.cc/en/Tutorial/YunSysupgrade)
 
+timezone yun - fixed with the yun setup page
+
 ## packages
 
     opkg update
@@ -19,4 +21,10 @@ This won't work without having an expanded disk. How to do it for the mini?
     cd gdata-2.0.18
     python setup.py install
 
+## copy over programs
 
+scp post.py query.py root@arduino.local:~/
+
+## crontab
+
+fixme

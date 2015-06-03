@@ -9,7 +9,7 @@ log.basicConfig(level=log.DEBUG,
             filemode='a')
 
 serial_port=serial.Serial()
-serial_port.port='/dev/ttyACM1'
+serial_port.port='/dev/ttyACM0'
 serial_port.baudrate=9600
 serial_port.open()
 
