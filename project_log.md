@@ -1,16 +1,57 @@
 # Todo
 
-* decide about power supply - whatever is best for hackspace installation
 * change software diagram to state diagram
-* fetch.py handle 500 errors from google
-* fetch.py timeout on network
-* run logging async - doesn't work, needs investigating - http://forum.arduino.cc/index.php?topic=286841.0
 * how to do periodic sync of tools on arduino? wait till all off and timeout?
 * crontab user tool sync
-* timezone yun
 * license
+* make post.py create a lock so only one can run at once to avoid too many
+ processes ?
 
-# 2015-06-01
+# 2015-06-03 - Testing
+
+As always, it's fairly quick to put together something that sort of works. But
+then finding all the little bugs and issues that have to be ironed out to make a
+good reliable product takes a lot longer.
+
+To help me test it I put together a [useful little
+script](software/python/log_serial.py) to capture and time
+stamp the logging from the Arduino part of the Yun.
+
+The system has been running over night and I've collected logs from the Linux
+and Yun side of things (timestamps synced courtesy of ntp).
+
+The only issue so far is occasional minute long hangs with the Process.run()
+Arduino code. After all the hassle with getting things working in the first
+place I'm going to leave this un-investigated for now. If people are interested
+in the project then it can be fixed then.
+
+# 2015-06-02 - Testing
+
+During testing I discovered a nasty bug where the bridge.py process on the yun
+(that deals with linux<->arduino communication) was failing. After a lot of
+debugging (I thought it was to do with stderr buffers being overflowed) I
+finally discovered that I wasn't null terminating the formatted time string for
+tool logging.
+
+## Multiprocess
+
+There are 3 times when the system needs to connect to the internet:
+
+* updating cache of users and tools
+* logging unknown rfids
+* logging tool usage when a tool is turned off
+
+I don't want the UI to hang while these are happening. Although the Yun bridge
+library has support for running shell commands asyncronously I decided to do it
+on the Linux side.
+
+I split the fetch program into [query](software/python/query.py) and
+[post](software/python/post.py). 
+
+query is what the Arduino uses for all user info/logging requests. It necessary
+it then runs the post command as a subprocess that runs separately.
+
+# 2015-06-01 - Testing
 
 Nice day of tidying things up and testing. Decided to put all the config data in
 one spreadsheet - tool owners/responsible people will have to trust each other.
@@ -23,7 +64,7 @@ Remember to doc some spreadsheet gotchas:
 Wanted to do async running of shell command but it doesn't seem to work. Not
 investigating further for now.
 
-# 2015-05-31
+# 2015-05-31 - Google doc access on the Yun with Python
 
 Finally found a way of doing oauth2 with python without the google oauth2.client
 library that has too many dependencies: gdata. This is another google library
@@ -47,7 +88,7 @@ This package needs python expat installed:
 * run ./fetch.py --auth-token
 * follow the url, then tokens will be added and saved to secrets.json
 
-# 2015-05-30
+# 2015-05-30 - Temboo
 
 Testing Yun cloud stuff. Temboo seems cool, but the only way to get columns of
 data seems to be using a json or xml based fetch. Fetching 100 rows of user info
@@ -87,12 +128,12 @@ compiled and of course the Yun doesn't come with a compiler...
 Trying an older version of oauth2client 1.4.3, still uses pyOpenSSL which has
 the cffi dependency.
 
-# 2015-05-29
+# 2015-05-29 - Peripheral hacking
 
 Train hacking! Got LCD, RFID, encoder and button working on the train up to
 Leeds.
 
-# 2015-05-28
+# 2015-05-28 - AM switch control with RC-Switch
 
 Had a look at 13.56MHz RFID readers and common (cheap) readers are all SPI and
 3.3v. So I might change the PCB layout to accomodate either the serial or SPI
@@ -118,7 +159,7 @@ bridge?
 So will add header, using SS & Reset as the pins I'm using for the serial RFID's
 enable & data.
 
-# 2015-05-27
+# 2015-05-27 - Components arrive
 
 Received the components for testing. For all part numbers and datasheets see the
 [bom.md](bom.md)
@@ -161,7 +202,7 @@ position detented type to test.
 Used an Adafruit library (see [requirements.txt](code/requirements.txt)) to read
 the encoder. This works as expected.
 
-# 2015-05-22
+# 2015-05-22 - Research
 
 Got the Yun schematic so I could start thinking about pinouts. I'm thinking of
 making a simple, single sided PCB to keep things neat. Necessary?
@@ -182,7 +223,7 @@ Initial research:
 RC-Switch library looks interesting. Have asked RS if they have anything
 compatible.
 
-# 2015-05-13 
+# 2015-05-13 - Initial design
 
 Initial design for a single enclosed RFID controlled switch. I chose a SSR for
 simplicity.
