@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #define RFID_ID_LENGTH 10 + 2
 SoftwareSerial rfid_serial(RFID_RX, RFID_TX); // RX, TX
-String query_cmd = "/root/python_bridge/fetch.py";
+String query_cmd = "/root/query.py";
 
 void setup_rfid()
 {
@@ -17,10 +17,9 @@ String read_rfid()
     String rfid = "";
     if(rfid_serial.available() == RFID_ID_LENGTH)
     {
-        while(rfid_serial.available())
+        for(int i = 0; i < RFID_ID_LENGTH; i++)
         {
-            char c = rfid_serial.read();
-            rfid.concat(c);
+            rfid.concat((char)rfid_serial.read());
         }
         //trim newline
         rfid.trim();
@@ -38,33 +37,46 @@ void timeout_user()
     for(int i = 0; i < MAX_TOOLS; i++)
         user.tools[i] = 0;
 }
+
 bool auth_user(String rfid)
 {
+    Serial.println("starting user auth");
     Process p;
     p.begin(query_cmd);
     p.addParameter("--check-user");
     p.addParameter("--rfid");
     p.addParameter(rfid);
+    Serial.println("about to run");
     p.run();
+    Serial.println("finished");
 
+    //command failed
     if(p.exitValue() != 0)
         return false;
 
     user.rfid = rfid;
 
+    p.setTimeout(1000);
+    Serial.println("is available?");
     if(p.available())
     {
+        Serial.println("reading till,");
         user.name = p.readStringUntil(',');
+        Serial.println("read");
         Serial.print("name:"); Serial.println(user.name);
         int i = 0;
+        Serial.println("reading tools");
         while(p.available() > 1) //more than one means we skip the \n
         {
+            Serial.println("about to parseint");
             user.tools[i] = p.parseInt();
+            Serial.println("done");
             Serial.print("tool:"); Serial.println(user.tools[i]);
             i++;
         }
     }
-    return true;
+
+    return(user.name != "");
 }
 
 int get_tools()
@@ -121,10 +133,6 @@ void log_tool_time()
     p.addParameter("--time");
     p.addParameter(lcd_format_time(tools[page_num].time));
     p.run();
-    Serial.println("run");
-    Serial.println(free_memory());
-    //async so we don't have to wait - didn't work because p goes out of scope
-//    p.runAsynchronously();
 }
 
 extern unsigned int __data_start;
