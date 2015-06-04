@@ -61,6 +61,7 @@ if __name__ == '__main__':
     try:
         if args.list_tools:
             for tool in get_tools():
+                log.info("listing tools")
                 print("%s,%s,%s" % (tool['name'], tool['id'], tool['operational']))
         elif args.log_tool:
             if not (args.time and args.rfid):
@@ -76,6 +77,7 @@ if __name__ == '__main__':
 
         elif args.check_user:
             try:
+                log.info("checking [%s]" % args.rfid)
                 name, tools = get_user(args.rfid)
                 print("%s,%s" % (name, tools))
             except KeyError as e:
