@@ -6,6 +6,37 @@
 * make post.py create a lock so only one can run at once to avoid too many
  processes ?
 
+# Burn testing
+
+Lots of cycles of the parts of the code that use the bridge code:
+
+* fetching user info
+* logging unknown rfid to internet
+* fetching tools
+* logging tool user to internet
+
+## Unknown rfid - read rfid, fetch user, log to internet
+
+3500 cycles in 8 hours, 11 cycles were longer than 5 seconds.
+Mem checks:
+
+    root@Arduino:~# cat /proc/meminfo | head
+    MemTotal:          61116 kB
+    MemFree:           29244 kB
+
+Uptime checks
+
+    20:02:51 up  3:16,  load average: 1.48, 1.65, 1.75
+
+## Known rfid - read rfid, fetch user, return
+
+1000 cycles in 1:10, all cycles completed in less than 4 secs
+
+    21:22:26 up  4:36,  load average: 1.33, 0.72, 0.57
+
+## Tool log - read rfid, fetch user, log tool to internet
+
+
 # 2015-06-04 - Testing
 
 Still investigating the hangs. Got another program called
@@ -36,6 +67,18 @@ And here's the log from the python program at the same time:
 I can see the program starting and ending straight away, but the code on the
 arduino is hanging for around 3 minutes!
 So I'm assuming the problem is with the Process stuff on the Arduino or the bridge.py program on the Yun.
+
+I just updated the arduino ide from 1.5.8 to 1.6.4. Looking at the md5sums of
+the source for the Bridge stuff, I can see that Bridge.cpp has changed but
+Process.cpp hasn't. There is a change in put() which I don't think is being
+used, but another in transfer to do with buffer lengths, so perhaps that's
+hopeful.
+
+Setting exit(1) in query.py for unknown users seems to have helped with the long
+hang times related to looking up user. The update to arduino ide 1.6.4 made a
+big difference to long timeouts occuring randomly to all bridge process
+requests.
+
 
 # 2015-06-03 - Testing
 
