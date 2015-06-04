@@ -6,6 +6,37 @@
 * make post.py create a lock so only one can run at once to avoid too many
  processes ?
 
+# 2015-06-04 - Testing
+
+Still investigating the hangs. Got another program called
+[process_log.py](software/python/process_log.py) that reads the log lines and
+reports any pair of lines that are more than a set number of seconds apart.
+That's been useful in helping to identify which parts of the code are hanging.
+
+This test was with an invalid rfid card on top of the reader. It shows that the code is sometimes taking 30 seconds to read the rfid.
+
+    from: 06-04 08:34:23 finished       
+    to  : 06-04 08:34:53 rfid available  took 30.0 secs
+
+And here's some logs showing what happens when the arduino code checks the rfid
+with the cached users using query.py:
+
+    from: 06-03 08:35:52 about to run   
+    to  : 06-03 08:38:45 finished        took 173.0 secs
+    from: 06-03 08:46:04 about to run   
+    to  : 06-03 08:47:11 finished        took 67.0 secs
+
+And here's the log from the python program at the same time:
+
+    06-03 08:35:55 WARNING  logging unknown rfid [04184A51EB]
+    06-03 08:35:55 INFO     ending
+    06-03 08:38:53 WARNING  logging unknown rfid [04184A51EB]
+    06-03 08:38:53 INFO     ending
+
+I can see the program starting and ending straight away, but the code on the
+arduino is hanging for around 3 minutes!
+So I'm assuming the problem is with the Process stuff on the Arduino or the bridge.py program on the Yun.
+
 # 2015-06-03 - Testing
 
 As always, it's fairly quick to put together something that sort of works. But
