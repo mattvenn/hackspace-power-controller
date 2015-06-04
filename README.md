@@ -1,16 +1,23 @@
-# Hackspace RFID power switch & usage logger
+# Hackspace machine access & usage logger
 
-A system for allowing inducted users to turn power on to various machines. Usage
-time is logged to a google spreadsheet. Inducted users are managed using a
-google spreadsheet.
+A system for allowing inducted users to turn power on to various machines. 
+
+* Users are authenticated with RFID.
+* Usage time is logged to a google spreadsheet.
+* Inducted users are managed using a google spreadsheet.
 
 Shortlink: [http://ven.nz/hkspcpc](http://ven.nz/hkspcpc)
 
 # Project log
 
-I've been making notes of [progress in the log](project_log.md)
+[Project log details design, build and testing](project_log.md)
 
 # Software
+
+Split into:
+
+* [Arduino code](software/power_controller/) for UI, RFID and radio. 
+* [Python code](software/python/) for local caching, internet logging.
 
 ## Design decisions
 
@@ -46,21 +53,9 @@ For interconnects, power and buzzer.
 
 ## Case design
 
-[generated with openscad file case.scad](case/case.scad)
+[Case design](case/case.md) [generated with openscad file case.scad](case/case.scad)
 
 ![case](case/case.png)
-
-All measurements in mm and stated as L x W x D
-
-* Yun + PCB = 70 x 85 x 10
-* RFID = 62 x 82 x ?
-* LCD = 37 x 116 x ?
-* Buttons = 8 x 20
-
-Modelling the layout led to a case size of 280 x 120 x 90mm.
-But these dimensions didn't yield many cases! So I looked for some common sizes
-and found some that were 240 x 120 x 100mm. Setting the openscad case dimensions
-to these figures allowed me to move things about to check fit.
 
 # Shortcomings
 
