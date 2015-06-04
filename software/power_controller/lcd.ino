@@ -4,10 +4,9 @@ void setup_lcd()
 {
     // set up the LCD's number of columns and rows: 
     lcd.begin(LCD_WIDTH, 2);
-    lcd_boot();
 }
 
-void lcd_boot()
+void lcd_boot_screen()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
