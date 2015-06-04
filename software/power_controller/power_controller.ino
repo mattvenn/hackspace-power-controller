@@ -98,7 +98,8 @@ void setup()
     pinMode(BUT_LED, OUTPUT);
     digitalWrite(BUT_LED, LOW);
 
-	//initialize the Bridge
+	//initialize the Bridge, takes a few seconds
+    lcd_boot_screen();
     Bridge.begin();
 
     //fetch users & tools
@@ -115,6 +116,7 @@ void loop()
             msCounts = 0;
             break;
         case S_USER_IDLE:
+            //check rfid every 100ms
             if(msCounts >= 100)
                 fsm_state_user = S_USER_READ_RFID;
             break;
