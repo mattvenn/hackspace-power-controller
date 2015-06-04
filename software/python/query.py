@@ -82,6 +82,7 @@ if __name__ == '__main__':
                 # separate process so we can return immediately
                 log.warning("logging unknown rfid [%s]" % args.rfid)
                 subprocess.Popen([get_post_prog(), "--log-unknown-rfid", "--rfid", args.rfid])
+                exit(1)
 
     except Exception as e:
     	if 'Name or service not known' in str(e):
