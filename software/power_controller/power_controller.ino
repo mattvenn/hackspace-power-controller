@@ -4,13 +4,23 @@
 #define BUT 4
 #define BUT_LED 5
 
-#define RFID_NOT_ENABLE 6
-#define HANDSHAKE 7 //do not use
+//either define RFID_SERIAL (serial based 125khz reader) or RFID_SPI (SPI based 13Mhz reader)
+// #define RFID_SERIAL
+#define RFID_SPI
 
-// Not all pins on the Leonardo support change interrupts,
-// so only the following can be used for RX:
-// 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
-#define RFID_RX 8
+#ifdef RFID_SERIAL
+	#define RFID_NOT_ENABLE 6
+	// Not all pins on the Leonardo support change interrupts,
+	// so only the following can be used for RX:
+	// 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
+	#define RFID_RX 8
+#elif defined RFID_SPI
+	#define SS_PIN 8
+	#define RST_PIN 6
+#endif
+
+#define HANDSHAKE 7 //do not use - reserved for future use?
+
 #define RFID_TX RFID_RX //same as each other as we never send
 
 #define LCD_D6 9
