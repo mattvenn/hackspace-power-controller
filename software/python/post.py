@@ -16,6 +16,7 @@ from datetime import datetime
 import gdata.spreadsheets.client
 import gdata.gauth
 import os
+import socket
 from query import get_install_dir, get_user, get_users_file, get_tools_file
 
 # put this in a config
@@ -165,14 +166,13 @@ if __name__ == '__main__':
         elif args.log_unknown_rfid:
             log_unknown_rfid(args.rfid)
 
-    except Exception as e:
-    	if 'Name or service not known' in str(e):
-            log.error("no internet connection")
-            exit(1)
-        elif 'Server responded with: 502' in str(e):
-            log.error("temporary google service failure")
-            exit(1)
-        else:
-            log.exception(e)
-            exit(1)
+        exit(0)
 
+    except socket.gaierror as e:
+        log.error("temporary google service failure")
+    except socket.error as e:
+        log.error("socket err: %s" % e)
+    except Exception as e:
+        log.exception(e)
+
+    exit(1)
