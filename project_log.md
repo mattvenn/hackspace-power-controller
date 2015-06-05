@@ -35,6 +35,10 @@ executed with a cronjob - fixed with a lock. And I'd thought of adding a lock to
 post.py too, but didn't get round to it. Instead I've spent hours researching a
 problem that wouldn't have happened if I'd added the lock in the first place!
 
+I tried to get the oom killer to do it's thing by running lots of processes but
+it never seemed to come into life. After enough processes the Yun hung and I had
+to reboot it. Fingers crossed this is the issue and it's now solved.
+
 # Burn testing
 
 Lots of cycles of the parts of the code that use the bridge code:
