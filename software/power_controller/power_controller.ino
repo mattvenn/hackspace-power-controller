@@ -4,7 +4,7 @@
 #define BUT 4
 #define BUT_LED 5
 
-//either define RFID_SERIAL (serial based 125khz reader) or RFID_SPI (SPI based 13Mhz reader)
+//either define RFID_SERIAL (serial based 125khz reader) or RFID_SPI (RC522 SPI based 13Mhz reader)
 // #define RFID_SERIAL
 #define RFID_SPI
 

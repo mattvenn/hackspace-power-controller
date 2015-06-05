@@ -1,2 +1,3 @@
 Rotary https://github.com/brianlow/Rotary
 RCSwitch https://github.com/sui77/rc-switch
+RFID https://github.com/miguelbalboa/rfid
