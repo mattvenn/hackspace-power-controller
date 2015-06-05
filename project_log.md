@@ -36,8 +36,30 @@ Uptime checks
 
 ## Tool log - read rfid, fetch user, log tool to internet
 
+Just when I thought it was safe to celebrate I started getting this:
 
-# 2015-06-04 - Testing
+    from: 06-05 07:48:42 about to run   
+    to  : 06-05 07:49:18 finished        took 36.0 secs
+    from: 06-05 07:49:44 about to run   
+    to  : 06-05 07:50:21 finished    
+
+Starting at 00:21:00 and continuing for every bridge process call after. Looking
+at the logs for the query.py program and the post.py program I could see that
+neither had been called since that time. So something happened to the bridge
+program that made it unable to call programs.
+
+I added some log lines to the Yun's bridge.py and processes.py programs to help
+debug this. Now I'm getting this in ~/bridge.log:
+
+    06-05 09:17:46 INFO     starting process [['/root/query.py', '--check-user', '--rfid', '04184A4FC6']]
+    06-05 09:17:46 INFO     process id is 0
+    06-05 09:17:49 INFO     waiting for process 0
+    06-05 09:17:49 INFO     finished 0
+
+So at least I'll be able to see what the process call was before bridge gets
+killed. Just setup another identical test and will leave all day.
+
+# 2015-06-04 - Even More Testing
 
 Still investigating the hangs. Got another program called
 [process_log.py](software/python/process_log.py) that reads the log lines and
@@ -80,7 +102,7 @@ big difference to long timeouts occuring randomly to all bridge process
 requests.
 
 
-# 2015-06-03 - Testing
+# 2015-06-03 - More Testing
 
 As always, it's fairly quick to put together something that sort of works. But
 then finding all the little bugs and issues that have to be ironed out to make a
