@@ -15,7 +15,7 @@ import logging as log
 from datetime import datetime
 import gdata.spreadsheets.client
 import gdata.gauth
-import os
+import fcntl
 import socket
 from query import get_install_dir, get_user, get_users_file, get_tools_file
 
@@ -147,6 +147,18 @@ if __name__ == '__main__':
                 filemode='a')
 
     args = parser.parse_args()
+
+    # as this program gets run separately, if there is a network error 
+    # lots can end up running, killing the Yun by eating memory
+    file = "/tmp/post.lock"
+    fd = open(file, 'w')
+    try:
+        log.debug("check lock")
+        fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        log.debug("ok")
+    except IOError:
+        log.debug("another process is running with lock. quitting!")
+        exit(1)
 
     # do everything in a try so we can log exceptions
     try:
