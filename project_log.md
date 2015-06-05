@@ -6,6 +6,35 @@
 * make post.py create a lock so only one can run at once to avoid too many
  processes ?
 
+# Bridge.py problems
+
+On another long burn test I got bridge.py to crash again. Once it's dead then
+it's game over for the whole system. This time I was logging everything and I
+found something interesting. Just before the system stopped I got a connection
+timeout from post.py (logging to internet). In the meantime another 2 logging
+processes were started (before the first post.py timed out). So 3 in total, plus the query program that calls it.
+
+I [found a good way to spoof a
+timeout](http://stackoverflow.com/questions/100841/artificially-create-a-connection-timeout-error)
+
+Then I ran a simple Arduino program to call query.py which in turn starts a new
+process (post.py) that will get timed out. After 4 loops the Yun became
+unresponsive. I got a chance to run loadavg and look at /proc/meminfo:
+
+    20:10:58 up  8:01,  load average: 2.31, 1.01, 0.47
+
+    root@Arduino:~# cat /proc/meminfo 
+    MemTotal:          61116 kB
+    MemFree:            1356 kB
+
+I'm guessing that as memory ran out, oom killer started killing big memory hogs,
+which includes bridge.py (13% of total RAM).
+
+It's funny because I've come across this exact issue before with a script
+executed with a cronjob - fixed with a lock. And I'd thought of adding a lock to
+post.py too, but didn't get round to it. Instead I've spent hours researching a
+problem that wouldn't have happened if I'd added the lock in the first place!
+
 # Burn testing
 
 Lots of cycles of the parts of the code that use the bridge code:
