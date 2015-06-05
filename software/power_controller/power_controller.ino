@@ -31,9 +31,9 @@
 #include <Process.h>
 
 //UI defs
-#define LCD_TIMEOUT 1000 //time we spend before changing screen
-#define SESSION_TIMEOUT 5000 //time before session times out
-#define UNKNOWN_USER_TIMEOUT 4000 //time before we scan again after bad rfid
+#define LCD_TIMEOUT 500 //time we spend before changing screen
+#define SESSION_TIMEOUT 500 //time before session times out
+#define UNKNOWN_USER_TIMEOUT 2000 //time before we scan again after bad rfid
 #define MAX_TOOLS 10
 
 //LCD
@@ -166,7 +166,6 @@ void loop()
             if(check_controls())
                 fsm_state_user = S_USER_UPDATE_LCD;
             //if user doesn't do anything for long enough, time out 
-
             if(msCounts >= SESSION_TIMEOUT)
             {
                 fsm_state_user = S_USER_TIMEOUT;

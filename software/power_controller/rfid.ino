@@ -17,10 +17,12 @@ String read_rfid()
     String rfid = "";
     if(rfid_serial.available() == RFID_ID_LENGTH)
     {
+        Serial.println("rfid available");
         for(int i = 0; i < RFID_ID_LENGTH; i++)
         {
             rfid.concat((char)rfid_serial.read());
         }
+        Serial.println("trim");
         //trim newline
         rfid.trim();
         Serial.print("got RFID: "); Serial.println(rfid);
@@ -45,6 +47,8 @@ bool auth_user(String rfid)
     p.begin(query_cmd);
     p.addParameter("--check-user");
     p.addParameter("--rfid");
+    Serial.print("rfid ["); Serial.print(rfid); Serial.print("] - length=");
+    Serial.println(rfid.length());
     p.addParameter(rfid);
     Serial.println("about to run");
     p.run();
@@ -52,11 +56,14 @@ bool auth_user(String rfid)
 
     //command failed
     if(p.exitValue() != 0)
+    {
+        Serial.println("returned false");
         return false;
+    }
 
+    //otherwise the rfid is valid and we'll read the user's name and tool privs
     user.rfid = rfid;
 
-    p.setTimeout(1000);
     Serial.println("is available?");
     if(p.available())
     {
@@ -76,23 +83,26 @@ bool auth_user(String rfid)
         }
     }
 
+    //in case there was a bridge issue
+    //return false if no name was received
     return(user.name != "");
 }
 
 int get_tools()
 {
-    Serial.println("fetch tools");
+    Serial.println("list tools");
     Process p;
     p.begin(query_cmd);
     p.addParameter("--list-tools");
     p.run();
-
+    Serial.println("run");
     if(p.exitValue() != 0)
         Serial.print("error");
 
     int num_tools = 0;
     if(p.available())
     {
+        Serial.println("tools available");
         while(p.available())
         {
             //name
