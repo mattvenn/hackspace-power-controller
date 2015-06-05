@@ -141,7 +141,7 @@ if __name__ == '__main__':
     # setup logging
     log.basicConfig(level=log.DEBUG,
                 format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%m-%d %H:%M:S',
+                datefmt='%m-%d %H:%M:%S',
                 filename=get_install_dir() + '/post.log',
                 filemode='a')
 
