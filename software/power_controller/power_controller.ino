@@ -51,6 +51,7 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 //FSM states
 #define S_START 0
+#define S_WAIT_RFID 1
 #define S_READ_RFID 2
 #define S_CHECK_RFID 3
 #define S_RFID_VALID 4
@@ -122,7 +123,11 @@ void loop()
     {
         case S_START:
             lcd_start();
-            //check rfid every 100ms
+            fsm_state_user = S_WAIT_RFID;
+            state_timer = 0;
+            break;
+        
+        case S_WAIT_RFID:
             if(state_timer >= 100)
                 fsm_state_user = S_READ_RFID;
             break;
@@ -134,7 +139,7 @@ void loop()
             else
             {
                 state_timer = 0;
-                fsm_state_user = S_IDLE;
+                fsm_state_user = S_WAIT_RFID;
             } 
             break;
 
