@@ -64,7 +64,6 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 #define S_USER_STOP_TOOL 10
 #define S_USER_WAIT_RADIO 11
 
-int fsm_state_user = S_USER_START;
 
 struct tool
 {
@@ -85,12 +84,15 @@ struct user
 } user;
 
 //ui globals
+int fsm_state_user = S_USER_START;
 int enc_clicks = 0; //encoder enc_clicks
 bool button_pressed = false; //button's been pressed
 int page_num = 0; //what page is showing on lcd
 String rfid; //where rfid tags are read into
 int num_tools = 0;
 unsigned int msCounts = 0; //counter for states
+String query_cmd = "/root/query.py"; //what we use to query users/log tool time
+
 
 void setup()
 {
@@ -135,7 +137,6 @@ void loop()
             if(rfid != "")
             {
                 fsm_state_user = S_USER_CHECK_RFID; 
-                Serial.println(free_memory());
             }
             else
             {
@@ -253,18 +254,20 @@ void loop()
             break;
             
     }
-    //Time keeping:
-  delay(1);              // wait for a millisecond
-  if(msCounts < 0xFFFF)  // Don't let the msCounts overflow
-  {
-    msCounts++;
-  }
+
+    //time keeping
+    delay(1);
+    if(msCounts < 0xFFFF)  // Don't let the msCounts overflow
+    {
+        msCounts++;
+    }
 }
         
-
 bool check_controls()
 {
+        //check encoder - could use interrupts instead of polling
         check_encoder();
+
         //limit to num of tools available
         if(enc_clicks < 0)
             enc_clicks = 0;
@@ -280,6 +283,8 @@ bool check_controls()
             button_pressed = false;
             return true;
         }
+
+        //check button
         if(digitalRead(BUT) == LOW)
         {
             button_pressed = true;
@@ -292,19 +297,19 @@ bool check_controls()
         return false;
 }
 
-void stop_tool()
-{
-    tools[page_num].running = false;
-    //turn off & log time
-    radio_turn_off(tools[page_num].id);
-    log_tool_time();
-}
+extern unsigned int __data_start;
+extern unsigned int __data_end;
+extern unsigned int __bss_start;
+extern unsigned int __bss_end;
+extern unsigned int __heap_start;
+extern void *__brkval;
 
-void start_tool()
-{
-    //log time & turn on
-    tools[page_num].running = true;
-    tools[page_num].time = millis()/1000;
-    tools[page_num].current_user = user.name;
-    radio_turn_on(tools[page_num].id);
-}
+int free_memory() {
+    int free_memory;
+  
+    if((int)__brkval == 0)
+        free_memory = ((int)&free_memory) - ((int)&__bss_end);
+    else
+        free_memory = ((int)&free_memory) - ((int)__brkval);
+    return free_memory;
+};
