@@ -13,6 +13,8 @@ bool auth_user(String rfid)
         return false;
 
     user.rfid = rfid;
+    //start session timeout
+    user.timeout = 0;
 
     if(p.available())
     {
@@ -89,11 +91,13 @@ void stop_tool()
     //turn off & log time
     radio_turn_off(tools[page_num].id);
     log_tool_time();
+    tools[page_num].time = 0;
 }
 
 void start_tool()
 {
     //log time & turn on
+    Serial.println(F("starting tool"));
     tools[page_num].running = true;
     tools[page_num].time = millis()/1000;
     tools[page_num].current_user = user.name;

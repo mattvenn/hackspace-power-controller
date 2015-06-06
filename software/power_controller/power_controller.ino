@@ -81,16 +81,16 @@ struct user
     String name = "";
     String rfid = "";
     int tools[MAX_TOOLS];
+    int timeout = 0;
 } user;
 
 //ui globals
 int fsm_state_user = S_USER_START;
 int enc_clicks = 0; //encoder enc_clicks
-bool button_pressed = false; //button's been pressed
 int page_num = 0; //what page is showing on lcd
 String rfid; //where rfid tags are read into
 int num_tools = 0;
-unsigned int msCounts = 0; //counter for states
+unsigned int state_timer = 0; //counter for states
 String query_cmd = "/root/query.py"; //what we use to query users/log tool time
 
 
@@ -125,11 +125,11 @@ void loop()
         case S_USER_START:
             lcd_start();
             fsm_state_user = S_USER_IDLE;
-            msCounts = 0;
+            state_timer = 0;
             break;
         case S_USER_IDLE:
             //check rfid every 100ms
-            if(msCounts >= 100)
+            if(state_timer >= 100)
                 fsm_state_user = S_USER_READ_RFID;
             break;
         case S_USER_READ_RFID:
@@ -140,17 +140,18 @@ void loop()
             }
             else
             {
-                msCounts = 0;
+                state_timer = 0;
                 fsm_state_user = S_USER_IDLE;
             } 
             break;
+
         case S_USER_CHECK_RFID:
             lcd_check_rfid();
             //check python command via bridge
             if(auth_user(rfid))
             {
                 Serial.println(F("valid id"));
-                msCounts = 0;
+                state_timer = 0;
                 page_num = 0;
                 enc_clicks = 0;
                 fsm_state_user = S_USER_VALID;
@@ -159,144 +160,140 @@ void loop()
             else
             {
                 fsm_state_user = S_USER_UNKNOWN;
-                msCounts = 0;
+                state_timer = 0;
                 lcd_invalid_user();
             }
             break;
+
         case S_USER_VALID:
-            if(msCounts >= LCD_TIMEOUT)
+            if(state_timer >= LCD_TIMEOUT)
                 fsm_state_user = S_USER_UPDATE_LCD;
             break;
 
         case S_USER_UNKNOWN:
-            if(msCounts >= UNKNOWN_USER_TIMEOUT)
+            if(state_timer >= UNKNOWN_USER_TIMEOUT)
                 fsm_state_user = S_USER_START;
             break;
 
         case S_USER_WAIT_CONTROL:
-            if(check_controls())
-                fsm_state_user = S_USER_UPDATE_LCD;
-            //if user doesn't do anything for long enough, time out 
-
-            if(msCounts >= SESSION_TIMEOUT)
+        {
+            //update lcd as soon as encoder changes
+            if(encoder_changed())
             {
+                fsm_state_user = S_USER_UPDATE_LCD;
+                state_timer = 0;
+                user.timeout = 0;
+            }
+            //button press logic, only allow inducted users to do things
+            if(button_pressed())
+            {
+                state_timer = 0;
+                user.timeout = 0;
+
+                //only if tool operational
+                if(tools[page_num].operational)
+                    if(is_inducted(tools[page_num].id))
+                        if(tools[page_num].running)
+                        {
+                            if(tools[page_num].current_user == user.name)
+                                fsm_state_user = S_USER_STOP_TOOL;
+                        }
+                        else
+                            fsm_state_user = S_USER_START_TOOL;
+            }            
+                            
+            //update lcd regularly
+            if(state_timer >= LCD_TIMEOUT)
+                fsm_state_user = S_USER_UPDATE_LCD;
+
+            //if user doesn't do anything for long enough, time out 
+            if(user.timeout >= SESSION_TIMEOUT)
+            {
+                Serial.println("auth timeout");
                 fsm_state_user = S_USER_TIMEOUT;
                 timeout_user();
-                msCounts = 0;
+                state_timer = 0;
                 lcd_session_timeout();
             }
             break;
-
+        }
         case S_USER_UPDATE_LCD:
-                //tool out of use
-                if(tools[page_num].operational == false)
-                {
-                    lcd_tool_offline();
-                }
-                //is inducted?
-                else if(! is_inducted(tools[page_num].id))
-                {
-                    lcd_tool_noinduct();
-                }
-                //it's not running
-                else if(not tools[page_num].running)
-                {
-                    if(button_pressed)
-                    {
-                        fsm_state_user = S_USER_START_TOOL;
-                        button_pressed = false;
-                        break;
-                    }
-                    lcd_tool_start();
-                }
-                //it's running and we're the user
-                else if(tools[page_num].current_user == user.name)
-                {
-                    if(button_pressed)
-                    {
-                        fsm_state_user = S_USER_STOP_TOOL;
-                        button_pressed = false;
-                        break;
-                    }
-                    lcd_tool_stop();
-                }
-                //it's running and we're not the user
-                else
-                {
-                    lcd_tool_in_use();
-                }
-                msCounts = 0;
-                fsm_state_user = S_USER_WAIT_CONTROL;
-                break;
-            
+            lcd_show_tool_page();
+            fsm_state_user = S_USER_WAIT_CONTROL;
+            state_timer = 0;
+            break;
+
         case S_USER_START_TOOL:
-                msCounts = 0;
+                state_timer = 0;
                 lcd_wait_radio();
                 start_tool();
                 fsm_state_user = S_USER_WAIT_RADIO;
                 break;
 
         case S_USER_STOP_TOOL:
-                msCounts = 0;
+                state_timer = 0;
                 lcd_wait_radio();
                 stop_tool();
                 fsm_state_user = S_USER_WAIT_RADIO;
                 break;
 
         case S_USER_WAIT_RADIO:
-            if(msCounts >= LCD_TIMEOUT)
+            if(state_timer >= LCD_TIMEOUT)
                 fsm_state_user = S_USER_UPDATE_LCD;
             break;
             
         case S_USER_TIMEOUT:
-            if(msCounts >= LCD_TIMEOUT)
+            if(state_timer >= LCD_TIMEOUT)
                  fsm_state_user = S_USER_START;
             break;
             
     }
 
-    //time keeping
+    //FSM time keeping
     delay(1);
-    if(msCounts < 0xFFFF)  // Don't let the msCounts overflow
+    if(state_timer < 0xFFFF)  // Don't let the state_timer overflow
     {
-        msCounts++;
+        state_timer++;
+        user.timeout++;
     }
 }
         
-bool check_controls()
+bool encoder_changed()
 {
-        //check encoder - could use interrupts instead of polling
-        check_encoder();
+    //check encoder - could use interrupts instead of polling
+    check_encoder();
 
-        //limit to num of tools available
-        if(enc_clicks < 0)
-            enc_clicks = 0;
-        if(enc_clicks > num_tools - 1)
-            enc_clicks = num_tools - 1;
-  
-        //different to last time? update display
-        if(page_num != enc_clicks)
-        {
-            page_num = enc_clicks;
-            //set button_pressed to false so don't accidentally press 
-            //when a page changes
-            button_pressed = false;
-            return true;
-        }
+    //limit to num of tools available
+    if(enc_clicks < 0)
+        enc_clicks = 0;
+    if(enc_clicks > num_tools - 1)
+        enc_clicks = num_tools - 1;
 
-        //check button
-        if(digitalRead(BUT) == LOW)
-        {
-            button_pressed = true;
-            //debounce
-            while(digitalRead(BUT) == LOW)
-                ;;
-            return true;
-        }
-
+    //different to last time? update display
+    if(page_num != enc_clicks)
+    {
+        page_num = enc_clicks;
+        return true;
+    }
+    else
         return false;
 }
 
+bool button_pressed()
+{
+    //check button
+    if(digitalRead(BUT) == LOW)
+    {
+        //debounce
+        while(digitalRead(BUT) == LOW);
+        return true;
+    }
+    else
+        return false;
+}
+
+//memory tracking
+/*
 extern unsigned int __data_start;
 extern unsigned int __data_end;
 extern unsigned int __bss_start;
@@ -313,3 +310,4 @@ int free_memory() {
         free_memory = ((int)&free_memory) - ((int)__brkval);
     return free_memory;
 };
+*/
