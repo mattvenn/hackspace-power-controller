@@ -25,11 +25,11 @@ Split into:
 
 ## UI State machine
 
-![FSM states|width=400px](software/fsm.png)
+[FSM diagram](software/fsm.png)
 
-## LCD pages
+## LCD Menu
 
-See the [UI](software/ui.md) doc.
+[UI](software/ui.md)
 
 # Electrical
 
