@@ -5,3 +5,7 @@
 # LCD Menu
 
 [UI](ui.md)
+
+# Requirements
+
+[requirements](requirements.txt)
