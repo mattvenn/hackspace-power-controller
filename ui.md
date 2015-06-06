@@ -6,61 +6,61 @@ Display after inactive for 5 seconds
 
     --------------------
     scan RFID to start
-    goto: ven.nz/hkspcpc
+    ven.nz/hkspcpc
 
 Unrecognised user.
 
     --------------------
     unrecognised RFID
-    goto: ven.nz/hkspcpc
+
 
 user Matt recognised
 
     --------------------
     user: matt
-    press next for tools
+    scroll for tools
 
-next button pressed - shows a tool ready to start
+next page - shows a tool ready to start
 
     --------------------
     1: lathe    inducted  
     select to start
 
-next button pressed  - showing Nic is already using machine for 1 hour 21 secs
+next page - showing Nic is already using machine for 1 hour 21 secs
 
     --------------------
     2: mill     inducted
     nic         00:01:21
 
-next button pressed - showing router is currently unavailable, with webpage for details
+next page - showing router is currently unavailable
 
     --------------------
-    3: router   offline
-    goto: ven.nz/hkspcpc
+    3: router   noinduct
+                offline 
 
-next button pressed - showing laser cutter, not inducted and webpage for detils
+next page - showing laser cutter in use, but not inducted
 
     --------------------
     4: laser    noinduct
-    goto: ven.nz/hkspcpc
+    nic         00:01:21
 
-select button pressed - showing saw available for use
+next page - showing saw available for use
 
     --------------------
     5: saw      inducted
-    select to start
+    start?
 
-select button pressed - showing saw and option to stop
+start/stop button pressed - showing saw and option to stop
 
     --------------------
-    5: saw      00:00:00
-    select to stop
+    5: saw      inducted
+    stop?       00:00:20
 
-select button pressed - showing option 1 again
+next page - showing option 1 again
 
     --------------------
     1: lathe    inducted  
-    select to start
+    start?
 
 ## Beeper
 
