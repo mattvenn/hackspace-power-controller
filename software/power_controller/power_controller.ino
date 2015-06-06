@@ -43,28 +43,26 @@
 //UI defs
 #define LCD_TIMEOUT 1000 //time we spend before changing screen
 #define SESSION_TIMEOUT 5000 //time before session times out
-#define UNKNOWN_USER_TIMEOUT 4000 //time before we scan again after bad rfid
+#define RFID_INVALID_TIMEOUT 4000 //time before we scan again after bad rfid
 #define MAX_TOOLS 10
 
 //LCD
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
+//FSM states
+#define S_START 0
+#define S_READ_RFID 2
+#define S_CHECK_RFID 3
+#define S_RFID_VALID 4
+#define S_RFID_INVALID 5
+#define S_WAIT_CONTROL 6
+#define S_LCD_SHOW_TOOL 7
+#define S_TIMEOUT 8
+#define S_START_TOOL 9
+#define S_STOP_TOOL 10
+#define S_WAIT_RADIO 11
 
-#define S_USER_START 0
-#define S_USER_IDLE 1
-#define S_USER_READ_RFID 2
-#define S_USER_CHECK_RFID 12
-#define S_USER_VALID 3
-#define S_USER_WAIT_CONTROL 4
-#define S_USER_UNKNOWN 5
-#define S_USER_TIMEOUT 6
-#define S_USER_UPDATE_LCD 7
-#define S_USER_BUTTON 8
-#define S_USER_START_TOOL 9
-#define S_USER_STOP_TOOL 10
-#define S_USER_WAIT_RADIO 11
-
-
+//array of tool data
 struct tool
 {
     String name;
@@ -85,7 +83,7 @@ struct user
 } user;
 
 //ui globals
-int fsm_state_user = S_USER_START;
+int fsm_state_user = S_START;
 int enc_clicks = 0; //encoder enc_clicks
 int page_num = 0; //what page is showing on lcd
 String rfid; //where rfid tags are read into
@@ -122,30 +120,25 @@ void loop()
 {
     switch(fsm_state_user)
     {
-        case S_USER_START:
+        case S_START:
             lcd_start();
-            fsm_state_user = S_USER_IDLE;
-            state_timer = 0;
-            break;
-        case S_USER_IDLE:
             //check rfid every 100ms
             if(state_timer >= 100)
-                fsm_state_user = S_USER_READ_RFID;
+                fsm_state_user = S_READ_RFID;
             break;
-        case S_USER_READ_RFID:
+
+        case S_READ_RFID:
             rfid = read_rfid();
             if(rfid != "")
-            {
-                fsm_state_user = S_USER_CHECK_RFID; 
-            }
+                fsm_state_user = S_CHECK_RFID; 
             else
             {
                 state_timer = 0;
-                fsm_state_user = S_USER_IDLE;
+                fsm_state_user = S_IDLE;
             } 
             break;
 
-        case S_USER_CHECK_RFID:
+        case S_CHECK_RFID:
             lcd_check_rfid();
             //check python command via bridge
             if(auth_user(rfid))
@@ -154,33 +147,33 @@ void loop()
                 state_timer = 0;
                 page_num = 0;
                 enc_clicks = 0;
-                fsm_state_user = S_USER_VALID;
+                fsm_state_user = S_RFID_VALID;
                 lcd_valid_user();
             }
             else
             {
-                fsm_state_user = S_USER_UNKNOWN;
+                fsm_state_user = S_RFID_INVALID;
                 state_timer = 0;
                 lcd_invalid_user();
             }
             break;
 
-        case S_USER_VALID:
+        case S_RFID_VALID:
             if(state_timer >= LCD_TIMEOUT)
-                fsm_state_user = S_USER_UPDATE_LCD;
+                fsm_state_user = S_LCD_SHOW_TOOL;
             break;
 
-        case S_USER_UNKNOWN:
-            if(state_timer >= UNKNOWN_USER_TIMEOUT)
-                fsm_state_user = S_USER_START;
+        case S_RFID_INVALID:
+            if(state_timer >= RFID_INVALID_TIMEOUT)
+                fsm_state_user = S_START;
             break;
 
-        case S_USER_WAIT_CONTROL:
+        case S_WAIT_CONTROL:
         {
             //update lcd as soon as encoder changes
             if(encoder_changed())
             {
-                fsm_state_user = S_USER_UPDATE_LCD;
+                fsm_state_user = S_LCD_SHOW_TOOL;
                 state_timer = 0;
                 user.timeout = 0;
             }
@@ -196,55 +189,55 @@ void loop()
                         if(tools[page_num].running)
                         {
                             if(tools[page_num].current_user == user.name)
-                                fsm_state_user = S_USER_STOP_TOOL;
+                                fsm_state_user = S_STOP_TOOL;
                         }
                         else
-                            fsm_state_user = S_USER_START_TOOL;
+                            fsm_state_user = S_START_TOOL;
             }            
                             
             //update lcd regularly
             if(state_timer >= LCD_TIMEOUT)
-                fsm_state_user = S_USER_UPDATE_LCD;
+                fsm_state_user = S_LCD_SHOW_TOOL;
 
             //if user doesn't do anything for long enough, time out 
             if(user.timeout >= SESSION_TIMEOUT)
             {
                 Serial.println("auth timeout");
-                fsm_state_user = S_USER_TIMEOUT;
+                fsm_state_user = S_TIMEOUT;
                 timeout_user();
                 state_timer = 0;
                 lcd_session_timeout();
             }
             break;
         }
-        case S_USER_UPDATE_LCD:
+        case S_LCD_SHOW_TOOL:
             lcd_show_tool_page();
-            fsm_state_user = S_USER_WAIT_CONTROL;
+            fsm_state_user = S_WAIT_CONTROL;
             state_timer = 0;
             break;
 
-        case S_USER_START_TOOL:
+        case S_START_TOOL:
                 state_timer = 0;
                 lcd_wait_radio();
                 start_tool();
-                fsm_state_user = S_USER_WAIT_RADIO;
+                fsm_state_user = S_WAIT_RADIO;
                 break;
 
-        case S_USER_STOP_TOOL:
+        case S_STOP_TOOL:
                 state_timer = 0;
                 lcd_wait_radio();
                 stop_tool();
-                fsm_state_user = S_USER_WAIT_RADIO;
+                fsm_state_user = S_WAIT_RADIO;
                 break;
 
-        case S_USER_WAIT_RADIO:
+        case S_WAIT_RADIO:
             if(state_timer >= LCD_TIMEOUT)
-                fsm_state_user = S_USER_UPDATE_LCD;
+                fsm_state_user = S_LCD_SHOW_TOOL;
             break;
             
-        case S_USER_TIMEOUT:
+        case S_TIMEOUT:
             if(state_timer >= LCD_TIMEOUT)
-                 fsm_state_user = S_USER_START;
+                 fsm_state_user = S_START;
             break;
             
     }

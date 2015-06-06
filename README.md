@@ -8,10 +8,6 @@ A system for allowing inducted users to turn power on to various machines.
 
 Shortlink: [http://ven.nz/hkspcpc](http://ven.nz/hkspcpc)
 
-# Project log
-
-[Project log details design, build and testing](project_log.md)
-
 # Software
 
 Split into:
@@ -27,19 +23,19 @@ Split into:
 * Pull validated users once per day and store locally in case internet is unavailable.
 * If internet is unavailable discard usage logging. Possible to add a queue later.
 
-## Flowchart
+## UI State machine
 
-![software](software/software.png)
+![FSM states](software/fsm.png)
 
-## User Interface
+## LCD pages
 
-See the [UI](ui.md) doc.
+See the [UI](software/ui.md) doc.
 
 # Electrical
 
 ## Bill of Materials
 
-See the [bom](bom.md)
+See the [bom](electronics/bom.md)
 
 ## Wiring
 
@@ -56,6 +52,11 @@ For interconnects, power and buzzer.
 [Case design](case/case.md) [generated with openscad file case.scad](case/case.scad)
 
 ![case](case/case.png)
+
+# Project log
+
+[Project log details design, build and testing](project_log.md)
+
 
 # Shortcomings
 

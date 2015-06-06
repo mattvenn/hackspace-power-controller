@@ -1,0 +1,34 @@
+strict digraph G {
+
+    start;
+    read_rfid[label="read rfid"];
+    check_rfid[label="check rfid"];
+    rfid_valid[label="valid rfid"];
+    rfid_invalid[label="invalid rfid"];
+    wait_control[label="wait for control"];
+    lcd_show_tool[label="show tool"];
+    timeout[label="session timeout"];
+    turn_on_off[label="turn tool on / off"];
+    wait_radio[label="radio wait"];
+
+    start -> read_rfid;
+    read_rfid -> start[label="no rfid"]
+    read_rfid -> check_rfid[label="rfid detected"]
+
+    check_rfid -> rfid_valid[label="valid user"];
+    check_rfid -> rfid_invalid[label="invalid user"];
+
+    rfid_invalid -> start[label="invalid user timeout"];
+
+    rfid_valid -> lcd_show_tool[label="lcd timeout"];
+
+    lcd_show_tool -> wait_control
+    wait_control -> lcd_show_tool[label="lcd timeout"]
+    wait_control -> lcd_show_tool[label="encoder changed"]
+    wait_control -> timeout[label="session timeout"]
+    timeout -> start
+
+    wait_control -> turn_on_off[label="button pressed"];
+    turn_on_off -> wait_radio[label="lcd timeout"];
+    wait_radio -> lcd_show_tool[label="lcd timeout"];
+}
