@@ -3,8 +3,17 @@
 * change software diagram to state diagram
 * how to do periodic sync of tools on arduino? wait till all off and timeout?
 * crontab user tool sync
-* make post.py create a lock so only one can run at once to avoid too many
  processes ?
+* merge post and query again, use async on arduino?
+
+# Lessons learnt (again)
+
+* Just because I've seen a problem before doesn't mean I'll recognise it again
+* Interprocess communication is harder than it seems
+* When debugging problems with processes ending on Linux, keep a log of load avg
+ and memory usage
+* When making major changes to [the plan](#Multiprocess), spend time thinking of
+ the ramifications - pretty obvious what was going to happen in hindsight.
 
 # Bridge.py problems
 
@@ -28,16 +37,19 @@ unresponsive. I got a chance to run loadavg and look at /proc/meminfo:
     MemFree:            1356 kB
 
 I'm guessing that as memory ran out, oom killer started killing big memory hogs,
-which includes bridge.py (13% of total RAM).
+which includes bridge.py (13% of total RAM, oom_score=45).
 
 It's funny because I've come across this exact issue before with a script
-executed with a cronjob - fixed with a lock. And I'd thought of adding a lock to
-post.py too, but didn't get round to it. Instead I've spent hours researching a
+executed with a cronjob - fixed with a lock. And I'd put adding a lock to
+post.py on the todo list, but didn't get round to it. Instead I've spent hours researching a
 problem that wouldn't have happened if I'd added the lock in the first place!
 
 I tried to get the oom killer to do it's thing by running lots of processes but
 it never seemed to come into life. After enough processes the Yun hung and I had
 to reboot it. Fingers crossed this is the issue and it's now solved.
+
+After a night of running the `Tool log - read rfid, fetch user, log tool to
+internet` test I clocked up 5600 cycles and everything stayed running.
 
 # Burn testing
 
@@ -82,7 +94,7 @@ neither had been called since that time. So something happened to the bridge
 program that made it unable to call programs.
 
 I added some log lines to the Yun's bridge.py and processes.py programs to help
-debug this. Now I'm getting this in ~/bridge.log:
+debug this. Now I'm getting lines like this in ~/bridge.log:
 
     06-05 09:17:46 INFO     starting process [['/root/query.py', '--check-user', '--rfid', '04184A4FC6']]
     06-05 09:17:46 INFO     process id is 0
