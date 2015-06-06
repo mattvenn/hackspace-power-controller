@@ -1,6 +1,6 @@
 # LCD messages & Menu
 
-Menu is driven by 2 illuminated buttons: next and select.
+Menu is driven by a rotary encoder and an illuminated button.
 
 Display after inactive for 5 seconds
 
@@ -71,8 +71,4 @@ Beep when:
 
 ## LEDs
 
-Both buttons have green leds. 
-
-* Next button illuminated when valid user present
-* Select button illuminated when a choice is allowed
-
+button illuminated when a choice is allowed
