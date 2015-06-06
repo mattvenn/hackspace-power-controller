@@ -29,15 +29,13 @@ Split into:
 
 See the [bom](electronics/bom.md)
 
-## Wiring
+## Schematic
 
 ![electrical components and wiring](electronics/electrical.png)
 
-## Schematic
-
-For interconnects, power and buzzer.
-
 ![schematic](electronics/schematic.png)
+
+[Eagle cad files](electronics)
 
 ## Case design
 
