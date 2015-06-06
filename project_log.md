@@ -1,9 +1,6 @@
 # Todo
 
-* change software diagram to state diagram
 * how to do periodic sync of tools on arduino? wait till all off and timeout?
-* crontab user tool sync
- processes ?
 * merge post and query again, use async on arduino?
 
 # Lessons learnt (again)
@@ -12,7 +9,7 @@
 * Interprocess communication is harder than it seems
 * When debugging problems with processes ending on Linux, keep a log of load avg
  and memory usage
-* When making major changes to [the plan](#Multiprocess), spend time thinking of
+* When making major changes to [the plan](#multiprocess), spend time thinking of
  the ramifications - pretty obvious what was going to happen in hindsight.
 
 # Bridge.py problems

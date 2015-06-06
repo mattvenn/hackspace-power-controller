@@ -10,7 +10,6 @@ timezone yun - fixed with the yun setup page
     opkg install python-expat
     opkg install python-ssl
 
-
 ## install python dependencies
 
 This won't work without having an expanded disk. How to do it for the mini?
@@ -27,4 +26,6 @@ scp post.py query.py root@arduino.local:~/
 
 ## crontab
 
-fixme
+refresh the local cache every hour
+
+    0 * * * * ./post.py --update-cache
