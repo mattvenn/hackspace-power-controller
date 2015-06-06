@@ -1,14 +1,8 @@
 strict digraph G {
     yun[shape=hexagon];
-    buzzer[shape=box];
-    power_in[shape=box];
-    rfid[shape=diamond];
-    lcd[shape=diamond];
-    next_but[shape=diamond];
-    select_but[shape=diamond];
-    next_but_led;
-    select_but_led;
-    radio[shape=box];
+    power_in[label="power in"];
+    encoder[label="encoder"];
+    select_but[label="illuminated button"];
 
     power_in -> yun[label="5V @ 1A"];
     power_in[label="5v in"]
@@ -17,14 +11,10 @@ strict digraph G {
     yun -> radio;
     rfid -> yun;
     yun -> buzzer;
-    yun -> next_but_led;
-    yun -> select_but_led;
-    next_but -> yun;
+    yun -> rfid;
+    encoder -> yun;
     select_but -> yun;
+    yun -> select_but;
 
-    next_but[label="next button"]
-    select_but[label="select button"]
-    next_but_led[label="next button LED"]
-    select_but_led[label="select button LED"]
 
 }
