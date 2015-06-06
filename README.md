@@ -25,7 +25,7 @@ Split into:
 
 ## UI State machine
 
-![FSM states](software/fsm.png)
+![FSM states|width=400px](software/fsm.png)
 
 ## LCD pages
 
