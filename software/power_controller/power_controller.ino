@@ -128,7 +128,7 @@ void loop()
             break;
         
         case S_WAIT_RFID:
-            if(state_timer >= 100)
+            if(state_timer >= 50)
                 fsm_state_user = S_READ_RFID;
             break;
 

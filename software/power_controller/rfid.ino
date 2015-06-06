@@ -41,6 +41,7 @@ String read_rfid()
         //trim newline
         rfid.trim();
         Serial.print("got RFID: "); Serial.println(rfid);
+        rfid_serial.flush();
     }
     else if(rfid_serial.available() > RFID_ID_LENGTH)
         rfid_serial.flush();
