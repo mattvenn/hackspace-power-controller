@@ -23,14 +23,6 @@ Split into:
 * Pull validated users once per day and store locally in case internet is unavailable.
 * If internet is unavailable discard usage logging. Possible to add a queue later.
 
-## UI State machine
-
-[FSM diagram](software/fsm.png)
-
-## LCD Menu
-
-[UI](software/ui.md)
-
 # Electrical
 
 ## Bill of Materials

@@ -1,4 +1,4 @@
-all: electronics/electrical.png software/fsm.png
+all: electronics/electrical.png software/power_controller/fsm.png
 
 %.svg: %.dot
 	dot -Tsvg $< > $@
@@ -7,5 +7,5 @@ all: electronics/electrical.png software/fsm.png
 	convert -density 200 -resize 600 $< $@
 
 clean:
-	rm -f electrical/electrical.png software/fsm.png
+	rm -f electrical/electrical.png software/power_controller/fsm.png
 
