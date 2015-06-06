@@ -169,6 +169,7 @@ void loop()
             if(msCounts >= SESSION_TIMEOUT)
             {
                 fsm_state_user = S_USER_TIMEOUT;
+                log_tool_time();
                 timeout_user();
                 msCounts = 0;
                 lcd_session_timeout();
