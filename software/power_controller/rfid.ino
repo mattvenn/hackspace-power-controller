@@ -32,19 +32,15 @@ String read_rfid()
     String rfid = "";
 
 #ifdef RFID_SERIAL
-    if(rfid_serial.available() == RFID_ID_LENGTH)
+
+    if(rfid_serial.available())
     {
         for(int i = 0; i < RFID_ID_LENGTH; i++)
-        {
             rfid.concat((char)rfid_serial.read());
-        }
         //trim newline
         rfid.trim();
-        Serial.print("got RFID: "); Serial.println(rfid);
-        rfid_serial.flush();
     }
-    else if(rfid_serial.available() > RFID_ID_LENGTH)
-        rfid_serial.flush();
+    rfid_serial.flush();
 
 #elif defined RFID_SPI
 	// Look for new cards
@@ -63,7 +59,6 @@ String read_rfid()
 		rfid.concat("0");
 		rfid.concat(String(mfrc522.uid.uidByte[i], HEX));
 	} 
-        Serial.print("got RFID: "); Serial.println(rfid);
 #endif
 
 	return rfid;

@@ -29,7 +29,6 @@ void lcd_session_timeout()
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("access timed out");
-    digitalWrite(BUT_LED, LOW);
 }
 
 void lcd_valid_user()
@@ -56,11 +55,20 @@ void lcd_check_rfid()
     lcd.print("checking RFID");
 }
 
-void lcd_wait_radio()
+void lcd_wait_radio_on()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("sending signal");
+    lcd.print("transmitting on");
+}
+
+void lcd_wait_radio_off()
+{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("transmitting off");
+    lcd.setCursor(0, 1);
+    lcd.print("logging usage");
 }
 
 //format time nicely
@@ -80,8 +88,6 @@ char * lcd_format_time(unsigned long t)
 void lcd_show_tool_page()
 {
     lcd.clear();
-    //assume button won't be available, set if it is
-    digitalWrite(BUT_LED, LOW);
     
     //1st line
     lcd.setCursor(0, 0);

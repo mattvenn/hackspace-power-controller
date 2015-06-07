@@ -14,6 +14,7 @@
 	// so only the following can be used for RX:
 	// 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
 	#define RFID_RX 8
+    #define RFID_TX RFID_RX //same as each other as we never send
 #elif defined RFID_SPI
 	#define SS_PIN 8
 	#define RST_PIN 6
@@ -21,7 +22,6 @@
 
 #define HANDSHAKE 7 //do not use - reserved for future use?
 
-#define RFID_TX RFID_RX //same as each other as we never send
 
 #define LCD_D6 9
 #define LCD_D7 10
@@ -179,6 +179,7 @@ void loop()
             if(encoder_changed())
             {
                 fsm_state_user = S_LCD_SHOW_TOOL;
+                digitalWrite(BUT_LED, LOW);
                 state_timer = 0;
                 user.timeout = 0;
             }
@@ -209,6 +210,7 @@ void loop()
             {
                 Serial.println("auth timeout");
                 fsm_state_user = S_TIMEOUT;
+                digitalWrite(BUT_LED, LOW);
                 timeout_user();
                 state_timer = 0;
                 lcd_session_timeout();
@@ -222,18 +224,20 @@ void loop()
             break;
 
         case S_START_TOOL:
-                state_timer = 0;
-                lcd_wait_radio();
-                start_tool();
-                fsm_state_user = S_WAIT_RADIO;
-                break;
+            digitalWrite(BUT_LED, LOW);
+            state_timer = 0;
+            lcd_wait_radio_on();
+            start_tool();
+            fsm_state_user = S_WAIT_RADIO;
+            break;
 
         case S_STOP_TOOL:
-                state_timer = 0;
-                lcd_wait_radio();
-                stop_tool();
-                fsm_state_user = S_WAIT_RADIO;
-                break;
+            digitalWrite(BUT_LED, LOW);
+            state_timer = 0;
+            lcd_wait_radio_off();
+            stop_tool();
+            fsm_state_user = S_WAIT_RADIO;
+            break;
 
         case S_WAIT_RADIO:
             if(state_timer >= LCD_TIMEOUT)

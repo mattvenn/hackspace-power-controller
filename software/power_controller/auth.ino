@@ -1,6 +1,7 @@
 bool auth_user(String rfid)
 {
-    Serial.println("starting user auth");
+    Serial.print("user auth for ");
+    Serial.println(rfid);
     Process p;
     p.begin(query_cmd);
     p.addParameter("--check-user");
