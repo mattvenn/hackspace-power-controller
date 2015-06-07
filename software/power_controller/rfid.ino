@@ -30,8 +30,8 @@ void start_rfid()
 {
 #ifdef RFID_SERIAL
     //this makes sure that there are no old ids in the serial buffer
-    digitalWrite(RFID_NOT_ENABLE, LOW);
     rfid_serial.flush();
+    digitalWrite(RFID_NOT_ENABLE, LOW);
 #endif
 }
 
