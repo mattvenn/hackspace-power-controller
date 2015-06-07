@@ -123,6 +123,7 @@ void loop()
     {
         case S_START:
             lcd_start();
+            start_rfid();
             fsm_state_user = S_WAIT_RFID;
             state_timer = 0;
             break;

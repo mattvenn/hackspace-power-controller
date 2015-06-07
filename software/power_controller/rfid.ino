@@ -1,7 +1,7 @@
 #ifdef RFID_SERIAL
 
 	#include <SoftwareSerial.h>
-	#define RFID_ID_LENGTH 10 + 2
+	#define RFID_ID_LENGTH 10
 	SoftwareSerial rfid_serial(RFID_RX, RFID_TX); // RX, TX
 
 #elif defined RFID_SPI
@@ -17,13 +17,21 @@ void setup_rfid()
 {
 #ifdef RFID_SERIAL
     rfid_serial.begin(2400);
-    rfid_serial.setTimeout(10);
-    //turn on rfid
+    rfid_serial.setTimeout(50);
     pinMode(RFID_NOT_ENABLE, OUTPUT);
-    digitalWrite(RFID_NOT_ENABLE, LOW);
+    digitalWrite(RFID_NOT_ENABLE, HIGH);
 #elif defined RFID_SPI
     SPI.begin();			// Init SPI bus
     mfrc522.PCD_Init();		// Init MFRC522
+#endif
+}
+
+void start_rfid()
+{
+#ifdef RFID_SERIAL
+    //this makes sure that there are no old ids in the serial buffer
+    digitalWrite(RFID_NOT_ENABLE, LOW);
+    rfid_serial.flush();
 #endif
 }
 
@@ -35,12 +43,19 @@ String read_rfid()
 
     if(rfid_serial.available())
     {
-        for(int i = 0; i < RFID_ID_LENGTH; i++)
-            rfid.concat((char)rfid_serial.read());
-        //trim newline
-        rfid.trim();
+        Serial.println("rfid serial available");
+        //get rid of any leading chars
+        rfid_serial.readStringUntil('\n');
+        //read till the end of the ID
+        rfid = rfid_serial.readStringUntil('\r');
+        //check we've got the right length
+        if(rfid.length() == RFID_ID_LENGTH)
+            //yes; then turn off reader
+            digitalWrite(RFID_NOT_ENABLE, HIGH);
+        else
+            //no; wipe it.
+            rfid = "";
     }
-    rfid_serial.flush();
 
 #elif defined RFID_SPI
 	// Look for new cards
