@@ -1,4 +1,4 @@
-strict digraph G {
+digraph G {
     start;
     read_rfid[label="read rfid"];
     rfid_wait[label="rfid wait"];
