@@ -18,9 +18,15 @@ expanded disk - which requires an extra breakout board for the Yun mini.
 Instead, use this [minimal version](gdata.tar.gz) that includes only support for
 what we need.
 
+Copy it to the Yun, then when logged in:
+
+    cd /usr/lib/python2.7/site-packages/
+    tar -xzf ~/gdata.tar.gz
+
 ## copy over programs
 
-scp post.py query.py root@arduino.local:~/
+    cd software/python/
+    scp post.py query.py root@arduino.local:~/
 
 ## create a spreadsheet
 
@@ -36,8 +42,8 @@ Make a note of your spreadsheet key; it's the text directly after "d/" in the UR
 * Search for drive API and then enable
 * on left menu choose APIs & auth -> credentials
 * 'create new client id' of type 'installed application', 'other'
-* json will be downloaded. Save this file to secrets.json on the yun
-* run ./post.py --auth-token --spread-key [your spreadsheet key here]
+* a json file will be downloaded. Save this file to /root/secrets.json on the yun
+* on the yun, run ./post.py --auth-token --spread-key [your spreadsheet key here]
 * follow the url, and copy and paste the validation code into the terminal; tokens will be added to secrets.json
 
 Test by running:
