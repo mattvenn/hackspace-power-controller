@@ -1,7 +1,6 @@
 # Todo
 
 * how to do periodic sync of tools on arduino? wait till all off and timeout?
-* merge post and query again, use async on arduino?
 
 # Lessons learnt (again)
 
