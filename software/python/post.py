@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 '''
 read setup.md for info in getting oauth2 setup. 
 
