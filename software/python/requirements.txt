@@ -1,3 +1,0 @@
-#try not to use pip to install these!
-gdata
-pyexpat
