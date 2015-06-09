@@ -11,7 +11,7 @@ Uses a local cache of tools and users to answer queries.
 
 Runs post.py as a background process to do internet related tasks.
 
-Lots to query.log
+Logs to query.log
 
 ## [post.py](post.py)
 
@@ -22,7 +22,7 @@ Deals with all internet stuff:
 * update local cache
 * setup oauth2 tokens
 
-Lots to post.log
+Logs to post.log
 
 # Debugging tools
 
