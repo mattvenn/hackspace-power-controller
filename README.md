@@ -20,7 +20,7 @@ Split into:
 * Presenting an inducted user's RFID card will authenticate.
 * Simple menu system to scroll through available tools and start/stop them.
 * Never switch off/time out the connected machine in case it's a long job.
-* Pull validated users once per day and store locally in case internet is unavailable.
+* Pull validated users once per hour and store locally in case internet is unavailable.
 * If internet is unavailable discard usage logging. Possible to add a queue later.
 
 # Electrical
@@ -35,7 +35,9 @@ See the [bom](electronics/bom.md)
 
 ![schematic](electronics/schematic.png)
 
-[Eagle cad files](electronics)
+[Eagle cad files](electronics) including [single layer PCB
+layout](electronics/board.png)
+
 
 ## Case design
 
@@ -56,6 +58,15 @@ To protect the plugs a locking box could be made out of wood that would contain 
 
 To protect the spreadsheet, it could be split into different sheets and then
 shared separately.
+
+# Other access control systems
+
+* [London Hackspace](https://wiki.london.hackspace.org.uk/view/Project:Tool_Access_Control)
+* [Nottingham Hackspace](https://wiki.nottinghack.org.uk/wiki/Nhtools)
+
+# Thanks
+
+This project was sponsored by [RS components](http://uk.rs-online.com/web/)
 
 # Licenses
 

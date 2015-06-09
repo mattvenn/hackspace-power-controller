@@ -1,8 +1,10 @@
 // All measurements in mm and stated as L x W x D
 // Yun = 73 x 53 x ?
-yun_l = 73;
-yun_w = 53;
-yun_h = 10;
+yun_l = 75;
+yun_w = 80;
+yun_h = 15;
+yun_b_l = 67.31;
+yun_b_w = 72.39;
 
 // IEC
 iec_l = 27;
@@ -91,6 +93,16 @@ module yun()
 {
     translate([0,0,yun_h/2])
     cube([yun_l, yun_w, yun_h], center=true);
+
+    //fixings
+    translate([-yun_b_l/2,-yun_b_w/2,yun_h/2])
+        cylinder(r=yun_b_d/2, h=yun_h*2, center=true);
+    translate([+yun_b_l/2,-yun_b_w/2,yun_h/2])
+        cylinder(r=yun_b_d/2, h=yun_h*2, center=true);
+    translate([+yun_b_l/2,+yun_b_w/2,yun_h/2])
+        cylinder(r=yun_b_d/2, h=yun_h*2, center=true);
+    translate([-yun_b_l/2,+yun_b_w/2,yun_h/2])
+        cylinder(r=yun_b_d/2, h=yun_h*2, center=true);
 }
 
 
