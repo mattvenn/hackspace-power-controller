@@ -2,9 +2,11 @@
 import json
 import subprocess
 import argparse
-import logging as log
-from datetime import datetime
+import logging
+from logging.handlers import RotatingFileHandler
 import os
+
+log = logging.getLogger('')
 
 def get_install_dir():
     return os.path.dirname(os.path.realpath(__file__))
@@ -49,19 +51,24 @@ if __name__ == '__main__':
         help="log a tool usage")
 
     # setup logging
-    log.basicConfig(level=log.DEBUG,
-                format='%(asctime)s %(levelname)-8s %(message)s',
-                datefmt='%m-%d %H:%M:%S',
-                filename=get_install_dir() + '/query.log',
-                filemode='a')
+    log.setLevel(logging.DEBUG)
+    log_format = logging.Formatter("%(asctime)s - %(levelname)-8s - %(message)s")
+
+    ch = logging.StreamHandler()
+    ch.setFormatter(log_format)
+    log.addHandler(ch)
+
+    fh = logging.handlers.RotatingFileHandler(get_install_dir() + '/query.log', maxBytes=(1024*1024), backupCount=7)
+    fh.setFormatter(log_format)
+    log.addHandler(fh)
 
     args = parser.parse_args()
 
     # do everything in a try so we can log exceptions
     try:
         if args.list_tools:
+            log.info("listing tools")
             for tool in get_tools():
-                log.info("listing tools")
                 print("%s,%s,%s" % (tool['name'], tool['id'], tool['operational']))
         elif args.log_tool:
             if not (args.time and args.rfid):
@@ -92,5 +99,4 @@ if __name__ == '__main__':
         log.exception(e)
         exit(1)
 
-    log.info("ending")
-
+    log.debug("ending")
