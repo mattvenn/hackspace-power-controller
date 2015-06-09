@@ -3,8 +3,8 @@
 A system for allowing inducted users to turn power on to various machines. 
 
 * Users are authenticated with RFID.
-* Usage time is logged to a google spreadsheet.
-* Inducted users are managed using a google spreadsheet.
+* Usage time is logged to a [google spreadsheet](https://docs.google.com/spreadsheets/d/1C3qdswIIFLBH4fQWuWFZRTpnnRjpzyk5xHRKnjuHExU/edit?usp=sharing).
+* Inducted users are managed using the same spreadsheet.
 
 Shortlink: [http://ven.nz/hkspcpc](http://ven.nz/hkspcpc)
 
