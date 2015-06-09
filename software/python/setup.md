@@ -10,15 +10,13 @@ timezone yun - fixed with the yun setup page
     opkg install python-expat
     opkg install python-ssl
 
-## install python dependencies
+## install gdata
 
-This won't work without having an expanded disk. How to do it for the mini?
+[gdata](https://pypi.python.org/pypi/gdata) is too big without having an
+expanded disk - which requires an extra breakout board for the Yun mini.
 
-    wget https://pypi.python.org/packages/source/g/gdata/gdata-2.0.18.tar.gz#md5=13b6e6dd8f9e3e9a8e005e05a8329408 --no-check-certificate
-
-    tar -xzf gdata-2.0.18
-    cd gdata-2.0.18
-    python setup.py install
+Instead, use this [minimal version](gdata.tar.gz) that includes only support for
+what we need.
 
 ## copy over programs
 
