@@ -1,3 +1,5 @@
+# Controller
+
 * [Arduino Yun Mini]() - [datasheet](datasheets/Arduino-yun-mini-schematics.pdf)
 * [RFID reader](http://uk.rs-online.com/web/p/products/6666625/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/0d16/0900766b80d1684b.pdf)
 * [LCD 2x20](http://uk.rs-online.com/web/p/products/7200222/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/0f25/0900766b80f25e5b.pdf)
@@ -10,3 +12,10 @@
 * [buzzer](http://uk.rs-online.com/web/p/piezo-buzzer-components/5358253/)
 * [psu](http://uk.rs-online.com/web/p/embedded-switch-mode-power-supplies-smps/0329011/)
 * [iec inlet](http://uk.rs-online.com/web/p/iec-connectors/0488191/)
+
+# Remote sockets
+
+You will also need some remote sockets. I used [Brennenstuhl
+3600](http://uk.rs-online.com/web/p/mains-connector-adapters-converters/7685368/)
+from RS but I would recommend using something more compatible with the
+[RC-Switch library](https://code.google.com/p/rc-switch/).
