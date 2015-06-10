@@ -10,65 +10,65 @@ void lcd_boot_screen()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("power controller");
+    lcd.print(F("power controller"));
     lcd.setCursor(0, 1);
-    lcd.print("waiting for Yun...");
+    lcd.print(F("waiting for Yun..."));
 }
 
 void lcd_start()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("scan RFID to start");
+    lcd.print(F("scan RFID to start"));
     lcd.setCursor(0, 1);
-    lcd.print("ven.nz/hkspcpc");
+    lcd.print(F("ven.nz/hkspcpc"));
 }
 
 void lcd_session_timeout()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("access timed out");
+    lcd.print(F("access timed out"));
 }
 
 void lcd_valid_user()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("user: ");
+    lcd.print(F("user: "));
     lcd.print(user.name);
     lcd.setCursor(0, 1);
-    lcd.print("scroll for tools");
+    lcd.print(F("scroll for tools"));
 }
 
 void lcd_invalid_user()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("unrecognised RFID");
+    lcd.print(F("unrecognised RFID"));
 }
 
 void lcd_check_rfid()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("checking RFID");
+    lcd.print(F("checking RFID"));
 }
 
 void lcd_wait_radio_on()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("transmitting on");
+    lcd.print(F("transmitting on"));
 }
 
 void lcd_wait_radio_off()
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("transmitting off");
+    lcd.print(F("transmitting off"));
     lcd.setCursor(0, 1);
-    lcd.print("logging usage");
+    lcd.print(F("logging usage"));
 }
 
 //format time nicely
@@ -101,14 +101,14 @@ void lcd_show_tool_page()
     //tool out of use
     if(tools[page_num].operational == false)
     {
-        lcd.print("offline");
+        lcd.print(F("offline"));
         return;
     }
     //now show if inducted or not
     else if(is_inducted(tools[page_num].id))
-        lcd.print("inducted");
+        lcd.print(F("inducted"));
     else
-        lcd.print("noinduct");
+        lcd.print(F("noinduct"));
 
     //2nd line of lcd
     lcd.setCursor(0, 1);
@@ -119,7 +119,7 @@ void lcd_show_tool_page()
         //and we're the current user
         if(tools[page_num].current_user == user.name)
         {
-            lcd.print("stop?");
+            lcd.print(F("stop?"));
             digitalWrite(BUT_LED, HIGH);
         }
         else
@@ -132,7 +132,7 @@ void lcd_show_tool_page()
     //if not running and we're inducted
     else if(is_inducted(tools[page_num].id))
     {
-        lcd.print("start?");
+        lcd.print(F("start?"));
         digitalWrite(BUT_LED, HIGH);
     }
 

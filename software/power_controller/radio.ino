@@ -2,8 +2,6 @@
 
 RCSwitch mySwitch = RCSwitch();
 
-#define MAX_CODES 3
-
 /*
 These codes were transcribed from a scope screen.
 I found more here http://pastebin.com/RgQ4VCyw
@@ -32,13 +30,13 @@ void setup_radio()
 void radio_turn_on(int tool_id)
 {
     //tool ids are 1 indexed, codes are 0 indexed
-    if(tool_id - 1 < MAX_CODES)
+    if(tool_id - 1 < MAX_TOOLS)
         mySwitch.send(on_codes[tool_id-1]);
 }
 
 void radio_turn_off(int tool_id)
 {
     //tool ids are 1 indexed, codes are 0 indexed
-    if(tool_id - 1 < MAX_CODES)
+    if(tool_id - 1 < MAX_TOOLS)
         mySwitch.send(off_codes[tool_id-1]);
 }
