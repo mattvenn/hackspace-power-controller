@@ -2,53 +2,43 @@
 
 RCSwitch mySwitch = RCSwitch();
 
-void setup_radio() {
+#define MAX_CODES 3
 
-  // Transmitter is connected to Arduino Pin #10  
-  pinMode(RADIO_TX,OUTPUT);
-  mySwitch.enableTransmit(RADIO_TX);
- 
-  // Optional set protocol (default is 1, will work for most outlets)
-   mySwitch.setProtocol(2);
+/*
+These codes were transcribed from a scope screen.
+I found more here http://pastebin.com/RgQ4VCyw
+But only the on codes worked, the off codes didn't.
+*/
 
-  // Optional set pulse length.
-   mySwitch.setPulseLength(500);
-  
-  // Optional set number of transmission repetitions.
-   mySwitch.setRepeatTransmit(20);  
+char * on_codes[] = {
+    "101001000110001010101100",
+    "101011011010011000000101",
+    "101000001100100101111110",
+};
+
+char * off_codes[] = {
+    "101001110111110010111100",
+    "101000010101101001000101",
+    "101010111011000001011110",
+};
+
+void setup_radio() 
+{
+    mySwitch.enableTransmit(RADIO_TX);
+    mySwitch.setProtocol(4);
+    mySwitch.setRepeatTransmit(20);  
 }
 
 void radio_turn_on(int tool_id)
 {
-    switch(tool_id)
-    {
-        case 1:
-            mySwitch.send("101001000110001010101100"); //1
-            break;
-        case 2:
-            mySwitch.send("101011011010011000000101"); //2
-            break;
-        case 3:
-            mySwitch.send("101000001100100101111110"); //3
-            break;
-        default:
-            Serial.println(F("no radio id"));
-    }
+    //tool ids are 1 indexed, codes are 0 indexed
+    if(tool_id - 1 < MAX_CODES)
+        mySwitch.send(on_codes[tool_id-1]);
 }
+
 void radio_turn_off(int tool_id)
 {
-    switch(tool_id)
-    {
-        case 1:
-            mySwitch.send("101001110111110010111100"); //1
-            break;
-        case 2:
-            mySwitch.send("101000010101101001000101"); //2
-            break;
-        case 3:
-            mySwitch.send("101010111011000001011110"); //3
-            break;
-        default:
-            Serial.println(F("no radio id"));
-    }
+    //tool ids are 1 indexed, codes are 0 indexed
+    if(tool_id - 1 < MAX_CODES)
+        mySwitch.send(off_codes[tool_id-1]);
 }
