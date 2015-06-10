@@ -98,7 +98,8 @@ void stop_tool()
 void start_tool()
 {
     //log time & turn on
-    Serial.println(F("starting tool"));
+    Serial.print(F("starting tool id"));
+    Serial.println(tools[page_num].id);
     tools[page_num].running = true;
     tools[page_num].time = millis()/1000;
     tools[page_num].current_user = user.name;
