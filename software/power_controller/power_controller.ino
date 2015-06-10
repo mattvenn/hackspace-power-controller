@@ -44,7 +44,8 @@
 #define LCD_TIMEOUT 1000 //time we spend before changing screen
 #define SESSION_TIMEOUT 5000 //time before session times out
 #define RFID_INVALID_TIMEOUT 4000 //time before we scan again after bad rfid
-#define MAX_TOOLS 10
+#define MAX_TOOLS 3 //you must have enough radio codes defined in radio.ino
+#define TOOL_UPDATE_PERIOD 18000000 //ms in half an hour
 
 //LCD
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
@@ -91,6 +92,7 @@ String rfid; //where rfid tags are read into
 int num_tools = 0;
 unsigned int state_timer = 0; //counter for states
 String query_cmd = "/root/query.py"; //what we use to query users/log tool time
+unsigned long int last_updated_tools = 0;
 
 
 void setup()
@@ -209,7 +211,7 @@ void loop()
             //if user doesn't do anything for long enough, time out 
             if(user.timeout >= SESSION_TIMEOUT)
             {
-                Serial.println("auth timeout");
+                Serial.println(F("auth timeout"));
                 fsm_state_user = S_TIMEOUT;
                 digitalWrite(BUT_LED, LOW);
                 timeout_user();
@@ -258,6 +260,18 @@ void loop()
     {
         state_timer++;
         user.timeout++;
+    }
+
+    //Update tool table regularly
+    if(millis() > last_updated_tools + TOOL_UPDATE_PERIOD)
+    {
+        //only update if no one using tools right now
+        if(can_update_tools())
+        {
+            Serial.println(F("updating tools"));
+            num_tools = get_tools();
+            last_updated_tools = millis();
+        }
     }
 }
         

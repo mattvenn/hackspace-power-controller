@@ -1,6 +1,10 @@
+/*
+Functions for authenticating users, timing out sessions,
+fetching tools, logging tool use.
+*/
 bool auth_user(String rfid)
 {
-    Serial.print("user auth for ");
+    Serial.print(F("user auth for "));
     Serial.println(rfid);
     Process p;
     p.begin(query_cmd);
@@ -20,12 +24,12 @@ bool auth_user(String rfid)
     if(p.available())
     {
         user.name = p.readStringUntil(',');
-        Serial.print("name:"); Serial.println(user.name);
+        Serial.print(F("name:")); Serial.println(user.name);
         int i = 0;
         while(p.available() > 1) //more than one means we skip the \n
         {
             user.tools[i] = p.parseInt();
-            Serial.print("tool:"); Serial.println(user.tools[i]);
+            Serial.print(F("tool:")); Serial.println(user.tools[i]);
             i++;
         }
     }
@@ -35,7 +39,7 @@ bool auth_user(String rfid)
 
 int get_tools()
 {
-    Serial.println("fetch tools");
+    Serial.println(F("fetch tools"));
     Process p;
     p.begin(query_cmd);
     p.addParameter("--list-tools");
@@ -50,6 +54,7 @@ int get_tools()
     int num_tools = 0;
     if(p.available())
     {
+        //read all the tools or until MAX_TOOLS is reached
         while(p.available())
         {
             //name
@@ -60,9 +65,11 @@ int get_tools()
             //chomp the newline
             p.read();
 
-            Serial.print("tool id:"); Serial.print(tools[num_tools].id);
-            Serial.print(" name:"); Serial.println(tools[num_tools].name);
+            Serial.print(F("tool id:")); Serial.print(tools[num_tools].id);
+            Serial.print(F(" name:")); Serial.println(tools[num_tools].name);
             num_tools++;
+            if(num_tools >= MAX_TOOLS)
+                break;
         }
     }
     return num_tools;
@@ -118,4 +125,23 @@ void log_tool_time()
     p.addParameter("--time");
     p.addParameter(lcd_format_time(tools[page_num].time));
     p.run();
+}
+
+//call periodically to keep our tool table up to date
+bool can_update_tools()
+{
+    bool update = true;
+
+    //don't update if someone logged in
+    if(user.name != "")
+        update = false;
+
+    //don't update if a tool is in use
+    for(int i = 0; i < num_tools; i++)
+    {
+        if(tools[i].running)
+            update = false;
+    }   
+
+    return update;
 }
