@@ -45,7 +45,7 @@
 #define SESSION_TIMEOUT 5000 //time before session times out
 #define RFID_INVALID_TIMEOUT 4000 //time before we scan again after bad rfid
 #define MAX_TOOLS 3 //you must have enough radio codes defined in radio.ino
-#define TOOL_UPDATE_PERIOD 18000000 //ms in half an hour
+#define TOOL_UPDATE_PERIOD 1800000 //ms in half an hour
 
 //LCD
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
