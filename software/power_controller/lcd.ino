@@ -1,9 +1,8 @@
-#define LCD_WIDTH 20
 
 void setup_lcd()
 {
     // set up the LCD's number of columns and rows: 
-    lcd.begin(LCD_WIDTH, 2);
+    lcd.begin(20, 2);
 }
 
 void lcd_boot_screen()
@@ -96,44 +95,31 @@ void lcd_show_tool_page()
     lcd.print(page_num + 1);
     lcd.print(": ");
     lcd.print(tools[page_num].name);
-    lcd.setCursor(LCD_WIDTH - 8, 0);
 
     //tool out of use
+    lcd.setCursor(0, 1);
     if(tools[page_num].operational == false)
     {
         lcd.print(F("offline"));
         return;
     }
-    //now show if inducted or not
-    else if(is_inducted(tools[page_num].id))
-        lcd.print(F("inducted"));
-    else
+    else if(! is_inducted(tools[page_num].id))
         lcd.print(F("noinduct"));
-
-    //2nd line of lcd
-    lcd.setCursor(0, 1);
-
     //if tool running
-    if(tools[page_num].running)
+    else if(tools[page_num].running)
     {
-        //and we're the current user
-        if(tools[page_num].current_user == user.name)
-        {
-            lcd.print(F("stop?"));
-            digitalWrite(BUT_LED, HIGH);
-        }
-        else
-            lcd.print(tools[page_num].current_user);
+        lcd.print(F("stop?"));
+        digitalWrite(BUT_LED, HIGH);
+        lcd.setCursor(10, 0);
+        lcd.print(tools[page_num].current_user);
 
         //show run time
-        lcd.setCursor(LCD_WIDTH - 8, 1);
+        lcd.setCursor(10, 1);
         lcd.print(lcd_format_time(tools[page_num].time));
     }
-    //if not running and we're inducted
-    else if(is_inducted(tools[page_num].id))
+    else
     {
         lcd.print(F("start?"));
         digitalWrite(BUT_LED, HIGH);
     }
-
 }

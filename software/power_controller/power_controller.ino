@@ -70,6 +70,7 @@ struct tool
     String name;
     bool running = false;
     String current_user = "";
+    String current_rfid = "";
     bool operational = true;
     int time = 0;
     int id = 0; //0 is an invalid id
@@ -197,8 +198,10 @@ void loop()
                     if(is_inducted(tools[page_num].id))
                         if(tools[page_num].running)
                         {
-                            if(tools[page_num].current_user == user.name)
-                                fsm_state_user = S_STOP_TOOL;
+                            //this line means only the person 
+                            //who started the tool can stop it.
+                            //if(tools[page_num].current_user == user.name)
+                            fsm_state_user = S_STOP_TOOL;
                         }
                         else
                             fsm_state_user = S_START_TOOL;

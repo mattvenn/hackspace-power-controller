@@ -110,6 +110,7 @@ void start_tool()
     tools[page_num].running = true;
     tools[page_num].time = millis()/1000;
     tools[page_num].current_user = user.name;
+    tools[page_num].current_rfid = user.rfid;
     radio_turn_on(tools[page_num].id);
 }
 
@@ -121,7 +122,7 @@ void log_tool_time()
     p.addParameter("--log-tool");
     p.addParameter(tools[page_num].name);
     p.addParameter("--rfid");
-    p.addParameter(user.rfid);
+    p.addParameter(tools[page_num].current_rfid);
     p.addParameter("--time");
     p.addParameter(lcd_format_time(tools[page_num].time));
     p.run();
