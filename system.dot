@@ -1,0 +1,18 @@
+digraph G {
+    compound = true;
+    subgraph cluster0 {
+    yun[shape=box,label="Arduino Yun"];
+    radio[shape=box,label="433MHz radio"];
+    rfid[shape=box,label="RFID"];
+    label="Controller"
+    color=blue;
+    }
+    
+    internet -> yun [dir=both];
+    radio -> power_socket1;
+    radio -> power_socket2;
+    power_socket1[shape=box, label="433MHz power plug"]
+    power_socket2[shape=box, label="433MHz power plug"]
+    yun->radio;
+    rfid->yun;
+}
