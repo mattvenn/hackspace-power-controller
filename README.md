@@ -5,8 +5,31 @@ A system for allowing inducted users to turn power on to various machines.
 * Users are authenticated with RFID.
 * Usage time is logged to a [google spreadsheet](https://docs.google.com/spreadsheets/d/1C3qdswIIFLBH4fQWuWFZRTpnnRjpzyk5xHRKnjuHExU/edit?usp=sharing).
 * Inducted users are managed using the same spreadsheet.
+* Tools are turned on and off with wireless mains plugs.
+
+![system overview](system.png)
 
 Shortlink: [http://ven.nz/hkspcpc](http://ven.nz/hkspcpc)
+
+Sponsored by [RS Components](http://uk.rs-online.com/web/)
+
+## Pros
+
+Cheap to implement as only need one central RFID reader and then very cheap
+remote plugs for equipment.
+
+Easy management for equipment managers via a google spreadsheet.
+
+## Cons
+
+Users will probably forget to 'log out' and clock up long machine run times.
+Systems in use at [London
+Hackspace](https://wiki.london.hackspace.org.uk/view/Project:Tool_Access_Control)
+and [Nottingham Hackspace](https://wiki.nottinghack.org.uk/wiki/Nhtools) both
+require the user's RFID card to remain in place while the machine is on, thus
+making it less likely the user will leave the machine running.
+
+Without covering/hacking the remote plugs, easy to bypass, but as used in a trusting environment, not seen as a big issue. 
 
 # Software
 
@@ -20,7 +43,9 @@ Split into:
 * Presenting an inducted user's RFID card will authenticate.
 * Simple menu system to scroll through available tools and start/stop them.
 * Never switch off/time out the connected machine in case it's a long job.
-* Pull validated users once per hour and store locally in case internet is unavailable.
+* Allow an inducted user to end another user's session in case they left it
+ running accidentally.
+* Pull tools & validated users once per hour and store locally in case internet is unavailable.
 * If internet is unavailable discard usage logging. Possible to add a queue later.
 
 # Electrical
@@ -48,25 +73,6 @@ layout](electronics/board.png)
 # Project log
 
 [Project log details design, build and testing](project_log.md)
-
-
-# Shortcomings
-
-In many cases easy to bypass, but as used in a trusting environment, not seen as a big issue. 
-
-To protect the plugs a locking box could be made out of wood that would contain an extension lead end, the radio power switch and the end of the machine cable.
-
-To protect the spreadsheet, it could be split into different sheets and then
-shared separately.
-
-# Other access control systems
-
-* [London Hackspace](https://wiki.london.hackspace.org.uk/view/Project:Tool_Access_Control)
-* [Nottingham Hackspace](https://wiki.nottinghack.org.uk/wiki/Nhtools)
-
-# Thanks
-
-This project was sponsored by [RS components](http://uk.rs-online.com/web/)
 
 # Licenses
 
