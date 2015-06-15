@@ -131,18 +131,16 @@ void log_tool_time()
 //call periodically to keep our tool table up to date
 bool can_update_tools()
 {
-    bool update = true;
-
     //don't update if someone logged in
     if(user.name != "")
-        update = false;
+        return false;
 
     //don't update if a tool is in use
     for(int i = 0; i < num_tools; i++)
     {
         if(tools[i].running)
-            update = false;
+            return false;
     }   
 
-    return update;
+    return true;
 }
