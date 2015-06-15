@@ -22,7 +22,7 @@
 
 #define HANDSHAKE 7 //do not use - reserved for future use?
 
-
+//lcd
 #define LCD_D6 9
 #define LCD_D7 10
 #define LCD_D4 11
@@ -30,12 +30,13 @@
 #define LCD_EN 13
 #define LCD_RS A0
 
-#define GPIO1 A3 //unused
-#define GPIO2 A2
-#define GPIO3 A1
-
 #define RADIO_TX A4
 #define BUZZ A5
+
+//unused pins broken out to GPIO header
+#define GPIO1 A3
+#define GPIO2 A2
+#define GPIO3 A1
 
 #include <LiquidCrystal.h>
 #include <Process.h>
@@ -44,7 +45,7 @@
 #define LCD_TIMEOUT 1000 //time we spend before changing screen
 #define SESSION_TIMEOUT 5000 //time before session times out
 #define RFID_INVALID_TIMEOUT 4000 //time before we scan again after bad rfid
-#define MAX_TOOLS 3 //you must have enough radio codes defined in radio.ino
+#define MAX_TOOLS 3 //you must have this many radio codes defined in radio.ino
 #define TOOL_UPDATE_PERIOD 1800000 //ms in half an hour
 
 //LCD
@@ -112,7 +113,7 @@ void setup()
     pinMode(BUT_LED, OUTPUT);
     digitalWrite(BUT_LED, LOW);
 
-	//initialize the Bridge, takes a few seconds
+    //initialize the Bridge, takes a few seconds
     lcd_boot_screen();
     Bridge.begin();
 
