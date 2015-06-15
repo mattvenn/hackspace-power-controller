@@ -15,7 +15,7 @@ Sponsored by [RS Components](http://uk.rs-online.com/web/)
 
 ## Pros
 
-Cheap to implement as only need one central RFID reader and then very cheap
+Cheap to implement as only need one central internet connected RFID reader and then very cheap
 remote plugs for equipment.
 
 Easy management for equipment managers via a google spreadsheet.
@@ -29,7 +29,7 @@ and [Nottingham Hackspace](https://wiki.nottinghack.org.uk/wiki/Nhtools) both
 require the user's RFID card to remain in place while the machine is on, thus
 making it less likely the user will leave the machine running.
 
-Without covering/hacking the remote plugs, easy to bypass, but as used in a trusting environment, not seen as a big issue. 
+Without covering/hacking the remote plugs; easy to bypass.
 
 # Software
 

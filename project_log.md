@@ -1,8 +1,31 @@
 # Todo
 
-* how to do periodic sync of tools on arduino? wait till all off and timeout?
+# 2015/06/12
 
-# Lessons learnt (again)
+Nice day in the workshop building the [case](case/case.scad). Even made a vinyl
+cut sticker to show where the RFID tag is swiped.
+Laser cut the mounting panels for inside the box, and used the CNC router for
+the front panel. Had to dremel the IEC inlet because the box is tool tall to fit
+in the machines.
+
+[Bubble etched](http://bristol.hackspace.org.uk/wiki/doku.php?id=bubble-etch) the PCB. I know it's not really necessary but I'm a sucker for
+neatness inside the box as well as outside!
+
+Had a chat with Nic about usage, and he reckons that requiring people to log
+out will be problematic. Within the scope of this project I can't do much about
+that. I do like the London and Nottingham hackspace systems that require an RFID
+card left in a box by the machine in use.
+
+I've modified the software so that a new user can stop another user's running
+session in case they've left a machine running accidentally.
+
+It's an interesting part of this project - normally I have a set idea I'm
+working to and then if I make a mistake with a part I can change it. This time,
+I'm working with a specific part, and then if later I realise the idea doesn't
+quite fit I'd have to change the idea. Not going to do that after all this work
+though!
+
+# 2015/06/09 Lessons learnt (again)
 
 * Just because I've seen a problem before doesn't mean I'll recognise it again
 * Interprocess communication is harder than it seems
@@ -11,7 +34,7 @@
 * When making major changes to [the plan](#multiprocess), spend time thinking of
  the ramifications - pretty obvious what was going to happen in hindsight.
 
-# Bridge.py problems
+# 2015/06/06 Bridge.py problems
 
 On another long burn test I got bridge.py to crash again. Once it's dead then
 it's game over for the whole system. This time I was logging everything and I
