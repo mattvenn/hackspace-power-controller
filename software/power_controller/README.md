@@ -16,5 +16,9 @@ libraries. I had success with Arduino v1.6.4
 Thanks to the developers of these libraries!
 
 * [Rotary](https://github.com/brianlow/Rotary)
+* [RFID](https://github.com/miguelbalboa/rfid) - only required for MFRC522
+ reader
 * [RCSwitch](https://github.com/sui77/rc-switch)
-* [RFID](https://github.com/miguelbalboa/rfid)
+
+If you are using the Brennenstuhl sockets, then until my pull request is merged,
+please use this [updated RCSwitch library](https://github.com/mattvenn/rc-switch).
