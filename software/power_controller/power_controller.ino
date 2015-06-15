@@ -149,10 +149,12 @@ void loop()
 
         case S_CHECK_RFID:
             lcd_check_rfid();
+            sound_rfid_read();
             //check python command via bridge
             if(auth_user(rfid))
             {
                 Serial.println(F("valid id"));
+                sound_rfid_valid();
                 state_timer = 0;
                 page_num = 0;
                 enc_clicks = 0;
@@ -162,6 +164,7 @@ void loop()
             else
             {
                 fsm_state_user = S_RFID_INVALID;
+                sound_rfid_invalid();
                 state_timer = 0;
                 lcd_invalid_user();
             }
@@ -220,6 +223,7 @@ void loop()
                 timeout_user();
                 state_timer = 0;
                 lcd_session_timeout();
+                sound_session_timeout();
             }
             break;
         }
@@ -283,16 +287,17 @@ bool encoder_changed()
     //check encoder - could use interrupts instead of polling
     check_encoder();
 
-    //limit to num of tools available
+    //limit to num of tools available & wrap around
     if(enc_clicks < 0)
-        enc_clicks = 0;
+        enc_clicks = num_tools -1;
     if(enc_clicks > num_tools - 1)
-        enc_clicks = num_tools - 1;
-
+        enc_clicks = 0;
+    
     //different to last time? update display
     if(page_num != enc_clicks)
     {
         page_num = enc_clicks;
+        sound_page_turn();
         return true;
     }
     else
@@ -306,10 +311,44 @@ bool button_pressed()
     {
         //debounce
         while(digitalRead(BUT) == LOW);
+        sound_button_press();
         return true;
     }
     else
         return false;
+}
+
+//sounds
+void sound_rfid_read()
+{
+    tone(BUZZ,1500,100);
+}
+
+void sound_rfid_valid()
+{
+    tone(BUZZ,1500,100);
+    delay(150);
+    tone(BUZZ,1500,100);
+}
+
+void sound_rfid_invalid()
+{
+    tone(BUZZ, 500, 500);
+}
+
+void sound_session_timeout()
+{
+    tone(BUZZ, 500, 500);
+}
+
+void sound_button_press()
+{
+    tone(BUZZ,1000,100);
+}
+
+void sound_page_turn()
+{
+    tone(BUZZ,2000,50);
 }
 
 //memory tracking
