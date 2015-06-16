@@ -1,5 +1,17 @@
 # Todo
 
+# 2015/06/16
+
+The yun mini finally arrived! So these notes will be about the differences I
+discover in getting the software to work on it.
+
+* password/login screen has changed, and the password is doghunter
+* the hostname has changed to linino.local
+* uname -a now is Linux linino 3.3.8 #1 Sat Apr 18 02:45:58 CEST 2015 mips GNU/Linux
+* no package python-ssl, tried python-openssl, works
+* no python package atom, copied from my laptop (added to gdata.tar.gz)
+
+
 # 2015/06/12
 
 Nice day in the workshop building the [case](case/case.scad). Even made a vinyl
