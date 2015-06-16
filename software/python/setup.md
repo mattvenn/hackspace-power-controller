@@ -8,7 +8,7 @@ timezone yun - fixed with the yun setup page
 
     opkg update
     opkg install python-expat
-    opkg install python-ssl
+    opkg install python-openssl
 
 ## install gdata
 
