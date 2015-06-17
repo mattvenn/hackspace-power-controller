@@ -15,7 +15,6 @@ Shortlink: [http://ven.nz/hkspcpc](http://ven.nz/hkspcpc)
 
 Sponsored by [RS Components](http://uk.rs-online.com/web/)
 
-
 ## Pros
 
 Cheap to implement as only need one central internet connected RFID reader and then very cheap
@@ -76,6 +75,8 @@ layout](electronics/board.png)
 # Project log
 
 [Project log details design, build and testing](project_log.md)
+
+[Photos](https://goo.gl/photos/4R67unRSMY9yUnsj8)
 
 # Licenses
 
