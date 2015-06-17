@@ -7,11 +7,14 @@ A system for allowing inducted users to turn power on to various machines.
 * Inducted users are managed using the same spreadsheet.
 * Tools are turned on and off with wireless mains plugs.
 
+![power controller](power_controller.JPG)
+
 ![system overview](system.png)
 
 Shortlink: [http://ven.nz/hkspcpc](http://ven.nz/hkspcpc)
 
 Sponsored by [RS Components](http://uk.rs-online.com/web/)
+
 
 ## Pros
 
