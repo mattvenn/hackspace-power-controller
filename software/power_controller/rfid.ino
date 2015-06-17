@@ -43,7 +43,7 @@ String read_rfid()
 
     if(rfid_serial.available())
     {
-        Serial.println(F("rfid serial available"));
+        Serial.println(F("rfid avail"));
         //get rid of any leading chars
         rfid_serial.readStringUntil('\n');
         //read till the end of the ID

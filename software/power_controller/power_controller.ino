@@ -5,8 +5,8 @@
 #define BUT_LED 5
 
 //either define RFID_SERIAL (serial based 125khz reader) or RFID_SPI (RC522 SPI based 13Mhz reader)
-#define RFID_SERIAL
-//#define RFID_SPI
+//#define RFID_SERIAL
+#define RFID_SPI
 
 #ifdef RFID_SERIAL
 	#define RFID_NOT_ENABLE 6
@@ -150,12 +150,14 @@ void loop()
 
         case S_CHECK_RFID:
             lcd_check_rfid();
-            sound_rfid_read();
+            tone(BUZZ,1500,100);
             //check python command via bridge
             if(auth_user(rfid))
             {
                 Serial.println(F("valid id"));
-                sound_rfid_valid();
+                tone(BUZZ,1500,100);
+                delay(150);
+                tone(BUZZ,1500,100);
                 state_timer = 0;
                 page_num = 0;
                 enc_clicks = 0;
@@ -165,7 +167,7 @@ void loop()
             else
             {
                 fsm_state_user = S_RFID_INVALID;
-                sound_rfid_invalid();
+                tone(BUZZ, 500, 500);
                 state_timer = 0;
                 lcd_invalid_user();
             }
@@ -224,7 +226,7 @@ void loop()
                 timeout_user();
                 state_timer = 0;
                 lcd_session_timeout();
-                sound_session_timeout();
+                tone(BUZZ, 500, 500);
             }
             break;
         }
@@ -269,7 +271,7 @@ void loop()
         state_timer++;
         user.timeout++;
     }
-
+/*
     //Update tool table regularly
     if(millis() > last_updated_tools + TOOL_UPDATE_PERIOD)
     {
@@ -281,6 +283,7 @@ void loop()
             last_updated_tools = millis();
         }
     }
+    */
 }
         
 bool encoder_changed()
@@ -298,7 +301,7 @@ bool encoder_changed()
     if(page_num != enc_clicks)
     {
         page_num = enc_clicks;
-        sound_page_turn();
+        tone(BUZZ,2000,50);
         return true;
     }
     else
@@ -312,44 +315,11 @@ bool button_pressed()
     {
         //debounce
         while(digitalRead(BUT) == LOW);
-        sound_button_press();
+        tone(BUZZ,1000,100);
         return true;
     }
     else
         return false;
-}
-
-//sounds
-void sound_rfid_read()
-{
-    tone(BUZZ,1500,100);
-}
-
-void sound_rfid_valid()
-{
-    tone(BUZZ,1500,100);
-    delay(150);
-    tone(BUZZ,1500,100);
-}
-
-void sound_rfid_invalid()
-{
-    tone(BUZZ, 500, 500);
-}
-
-void sound_session_timeout()
-{
-    tone(BUZZ, 500, 500);
-}
-
-void sound_button_press()
-{
-    tone(BUZZ,1000,100);
-}
-
-void sound_page_turn()
-{
-    tone(BUZZ,2000,50);
 }
 
 //memory tracking
