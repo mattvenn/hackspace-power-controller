@@ -10,7 +10,7 @@
 * [encoder](http://uk.rs-online.com/web/p/mechanical-rotary-encoders/7295839/) - [datasheet](http://docs-europe.electrocomponents.com/webdocs/0f4c/0900766b80f4c3d5.pdf)
 * m9x0.75 nut for encoder
 * [buzzer](http://uk.rs-online.com/web/p/piezo-buzzer-components/5358253/)
-* [psu](http://uk.rs-online.com/web/p/embedded-switch-mode-power-supplies-smps/0329011/)
+* [psu](http://uk.rs-online.com/web/p/embedded-switch-mode-power-supplies-smps/7773109/)
 * [iec inlet](http://uk.rs-online.com/web/p/iec-connectors/0488191/)
 
 # Remote sockets
