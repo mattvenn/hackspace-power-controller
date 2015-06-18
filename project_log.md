@@ -1,8 +1,10 @@
 # Todo
 
+* More testing on Yun Mini Wifi
+
 # 2015/06/16
 
-The yun mini finally arrived! So these notes will be about the differences I
+The Yun Mini finally arrived! So these notes will be about the differences I
 discover in getting the software to work on it.
 
 * password/login screen has changed, and the password is doghunter
@@ -11,6 +13,13 @@ discover in getting the software to work on it.
 * no package python-ssl, tried python-openssl, works
 * no python package atom, copied from my laptop (added to gdata.tar.gz)
 
+Things that didn't work:
+
+* Button [didn't work as expected](http://www.mattvenn.net/2015/06/18/57m-ss-hall-effect-button/)!
+* PSU wrong! I've got no idea how I managed to get this wrong after spending so
+ much time on it. It only goes up to ~120VAC. I've changed the BOM already.
+* My Yun Mini PCB footprint slightly wrong sized, but still fits!
+* My Yun Mini has poor wifi abilities, can't reliably create a hotspot or stay connected to another network.
 
 # 2015/06/12
 
