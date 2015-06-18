@@ -18,13 +18,13 @@ iec_bolt_d = 3.5;
 iec_bolt_space = 40;
 
 // psu
-psu_l = 115;
-psu_w = 50;
-psu_h = 15;
+psu_l = 63.5;
+psu_w = 45.7;
+psu_h = 24;
 // bolt spacing
-psu_b_l = 108;
-psu_b_w = 43;
-psu_b_d = 3.5;
+psu_b_l = 57.15;
+psu_b_w = 39.35;
+psu_b_d = 4.0;
 
 
 // button = 16mm diameter
@@ -61,10 +61,31 @@ screw_r = 1.5;
 //projection() back_panel();
 //projection() front_panel();
 //projection()
- front_panel_mount();
+//front_panel_mount();
 
-//the 3 panels that we need
+complete();
 
+//how it should look
+module complete()
+{
+    //crappy way of putting it all together.
+    translate([0,0,10])
+    {
+    translate([0,60,0]) rotate([0,0,90])yun();
+    back_panel();
+    translate([0,-60,0]) 
+        psu();
+    }
+    translate([0,0,case_c2-10])
+    {
+        translate([0,70,-5]) rotate([0,0,-90]) rfid();
+        front_panel_mount();
+    }
+    case();
+    front_panel();
+}
+
+//the 3 mounting panels that we need
 module back_panel()
 {
     difference()
@@ -257,13 +278,13 @@ module case()
 {
 	rotate([0,0,90])
     {
-        color("red", 0.2)
+        color("red", 0.4)
         translate([0,0,(case_c2-case_c1)/2])
         {
             cube([case_a1, case_b2, case_c2-case_c1], center=true);
             cube([case_a2, case_b1, case_c2-case_c1], center=true);
         }
-        color("blue", 0.2)
+        color("blue", 0.4)
         translate([0,0,case_c2/2-15 + case_c1 *2 ])
         {
             cube([case_a1, case_b2, case_c1], center=true);
