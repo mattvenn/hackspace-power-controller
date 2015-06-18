@@ -16,7 +16,8 @@ timezone yun - fixed with the yun setup page
 expanded disk - which requires an extra breakout board for the Yun mini.
 
 Instead, use this [minimal version](gdata.tar.gz) that includes only support for
-what we need.
+what we need. I also added the google Atom library to it which I couldn't find
+on PyPi.
 
 Copy it to the Yun, then when logged in:
 
